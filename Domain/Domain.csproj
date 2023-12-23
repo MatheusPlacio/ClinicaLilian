@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="DTOs\AgendamentosDTO\" />
+    <Folder Include="DTOs\EnderecoDTO\" />
+    <Folder Include="DTOs\FuncionariosDTO\" />
+    <Folder Include="DTOs\ProcedimentoAgendamentoDTO\" />
+    <Folder Include="DTOs\ProcedimentosDTO\" />
+    <Folder Include="DTOs\PacientesDTO\" />
+    <Folder Include="Interfaces\IRepository\" />
+    <Folder Include="Interfaces\IService\" />
+    <Folder Include="Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="6.0.10" />
+  </ItemGroup>
+
+</Project>

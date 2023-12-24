@@ -52,7 +52,7 @@ namespace Domain.DTOs.PacientesDTO
         public int? Idade { get; set; }
 
         //============================================================================================================================//
-        public int EnderecoId { get; set; }
+        //public int EnderecoId { get; set; }
 
     }
 }

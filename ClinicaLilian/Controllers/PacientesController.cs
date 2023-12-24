@@ -10,8 +10,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClinicaLilian.Controllers
 {
-    [Route("api/pacientes")]
-    [ApiController]
     public class PacientesController : Controller
     {
         private readonly IPacienteService _pacienteService;
@@ -65,25 +63,31 @@ namespace ClinicaLilian.Controllers
             return Ok(paciente);
         }
 
-        //public IActionResult ObterTodosPacientesEnderecos()
-        //{
-        //    var enderecos = _pacienteService.GetTodosPacientesEnderecos();
-        //    return Ok(enderecos);
-        //}
 
+        public IActionResult Create()
+        {
+            // Lógica da Action
+            return View();
+        }
+
+        [HttpPost]
         public IActionResult CriarPaciente(PacienteRegisterDTO pacienteDTO)
         {
             try
             {
-               _pacienteService.CriarPaciente(_mapper.Map<Paciente>(pacienteDTO));
+                _pacienteService.CriarPaciente(_mapper.Map<Paciente>(pacienteDTO));
+
+                // Redireciona para a lista de pacientes (por exemplo, a action Index)
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                throw ex;
+                // Lida com exceções de maneira apropriada (pode ser interessante logar o erro, exibir uma mensagem ao usuário, etc.)
+                ViewBag.ErrorMessage = "Ocorreu um erro ao criar o paciente: " + ex.Message;
+                return View("Create", pacienteDTO); // Retorna à página de criação com uma mensagem de erro
             }
-
-            return CreatedAtAction(nameof(CriarPaciente), new { id = pacienteDTO.PacienteId }, null);
         }
+
 
         public async Task<IActionResult> AtualizarPaciente(PacienteUpdateDTO pacienteDTO)
         {

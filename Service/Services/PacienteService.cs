@@ -27,7 +27,7 @@ namespace Service.Services
         public IList<PacienteDTO> ObterTodosPacientes()
         {
             var pacientes = _pacienteRepository.Get();
-            var pacientesDTO = pacientes.Select(p => new PacienteDTO
+            var pacientesDTO = pacientes.OrderBy(p => p.Nome).Select(p => new PacienteDTO
             {
                 PacienteId = p.PacienteId,
                 Nome = p.Nome,

@@ -1,5 +1,12 @@
 ﻿@model IEnumerable<Domain.DTOs.PacientesDTO.PacienteDTO>
 
+@{
+    var pageSize = 4; // Número de itens por página
+    int pageNumber;
+    int.TryParse(Context.Request.Query["page"], out pageNumber);
+    pageNumber = pageNumber <= 0 ? 1 : pageNumber;
+}
+
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -7,7 +14,7 @@
                 <h1>Pacientes</h1>
             </div>
             <div class="col-sm-6">
-                <a href="@Url.Action("CriarPaciente", "Pacientes")" class="btn btn-success float-right">
+                <a href="@Url.Action("Create", "Pacientes")" class="btn btn-success float-right">
                     Novo Paciente
                 </a>
             </div>
@@ -76,7 +83,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var paciente in Model)
+                    @foreach (var paciente in Model.Skip((pageNumber - 1) * pageSize).Take(pageSize))
                         {
                             <tr>
                                 <td>
@@ -123,6 +130,18 @@
                         }
                     </tbody>
                 </table>
+            </div>
+        <div class="card-footer clearfix">
+            <div class="d-flex justify-content-center mt-3">
+                <!-- Paginação simples com links para páginas anteriores e próximas -->
+                @if (pageNumber > 1)
+                {
+                    <a href="@Url.Action("Index", new { page = pageNumber - 1 })" class="btn btn-primary">Página Anterior</a>
+                }
+                @if (Model.Count() > pageNumber * pageSize)
+                {
+                    <a href="@Url.Action("Index", new { page = pageNumber + 1 })" class="btn btn-primary ml-2">Próxima Página</a>
+                }
             </div>
         </div>
         <!-- /.card-body -->

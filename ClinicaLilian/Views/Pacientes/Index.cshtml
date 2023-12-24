@@ -1,0 +1,142 @@
+﻿@model IEnumerable<Domain.DTOs.PacientesDTO.PacienteDTO>
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Pacientes</h1>
+            </div>
+            <div class="col-sm-6">
+                <a href="@Url.Action("CriarPaciente", "Pacientes")" class="btn btn-success float-right">
+                    Novo Paciente
+                </a>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Listagem dos Pacientes</h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <form action="@Url.Action("PesquisarPorCpf", "Pacientes")" method="get" class="form-inline">
+                <div class="input-group input-group-sm">
+                    <input type="text" name="searchCpf" class="form-control mr-3 ml-3" placeholder="Pesquisar por CPF" pattern="\d+" style="color: black; background-color: #fff; margin-top: 10px;" title="Digite apenas números">
+                    <div class="input-group-append" style="margin-top: 10px;">
+                        <button type="submit" class="btn btn-primary ml-3">
+                            <i class="fas fa-search"></i> Pesquisar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        @{
+            var searchCpf = Context.Request.Query["searchCpf"].ToString();
+        }
+
+        @if (!string.IsNullOrEmpty(searchCpf))
+        {
+            <!-- Mostra os resultados da pesquisa -->
+            <div class="mb-4">
+                <!-- Adicione o botão de retorno à lista anterior com estilos de posição -->
+                <a href="@Url.Action("Index", "Pacientes")" class="btn btn-secondary mt-2 mr-2" style="position: absolute; top: 5px; right: 15px;">
+                    <i class="fas fa-arrow-left"></i> Voltar à Lista Anterior
+                </a>
+            </div>
+
+
+            <!-- Aqui você mostra os resultados da pesquisa -->
+            <div class="table-responsive">
+                <!-- ... Seu código para exibir os detalhes do paciente ... -->
+            </div>
+        }
+
+            <div class="table-responsive">
+                <table class="table table-striped projects">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%">Nome</th>
+                            <th style="width: 15%">Sobrenome</th>
+                            <th style="width: 10%">Data de Nascimento</th>
+                            <th style="width: 10%">Gênero</th>
+                            <th style="width: 10%">CPF</th>
+                            <th style="width: 15%">Celular</th>
+                            <th style="width: 15%">Email</th>
+                            <th style="width: 10%">Profissão</th>
+                            <th style="width: 15%">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var paciente in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="text" class="form-control" readonly value="@paciente.Nome">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" readonly value="@paciente.SobreNome">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" readonly value="@paciente.DataDeNascimento">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" readonly value="@paciente.Genero">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" readonly value="@paciente.CPF">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" readonly value="@paciente.Celular">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" readonly value="@paciente.Email">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" readonly value="@paciente.Profissao">
+                                </td>
+                                <td class="project-actions text-right">
+                                    <div class="btn-group-vertical">
+                                        <a class="btn btn-primary btn-sm mb-2" href="@Url.Action("Details", "Pacientes", new { id = paciente.PacienteId })">
+                                            <i class="fas fa-eye"></i> Visualizar
+                                        </a>
+                                        <a class="btn btn-info btn-sm mb-2" href="@Url.Action("AtualizarPaciente", "Pacientes", new { id = paciente.PacienteId })">
+                                            <i class="fas fa-pencil-alt"></i> Editar
+                                        </a>
+                                        <form action="@Url.Action("Delete", "Pacientes")" method="post" style="display: inline-block;">
+                                            <input type="hidden" name="Id" value="@paciente.PacienteId" />
+                                            <button type="submit" class="btn btn-danger btn-sm mb-2" onclick="return confirm('Tem certeza que deseja excluir este paciente?');">
+                                                <i class="fas fa-trash"></i> Excluir
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+</section>
+
+<aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+</aside>
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>

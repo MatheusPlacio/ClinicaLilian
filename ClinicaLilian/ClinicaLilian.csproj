@@ -31,12 +31,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Agendamentos\" />
-    <Folder Include="Views\Funcionarios\" />
-    <Folder Include="Views\Cancelamentos\" />
-    <Folder Include="Views\Reagendamentos\" />
-    <Folder Include="Views\Pacientes\" />
     <Folder Include="wwwroot\css\alt\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Agendamentos\Index.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

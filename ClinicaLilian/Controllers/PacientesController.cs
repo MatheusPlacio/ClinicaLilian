@@ -12,7 +12,7 @@ namespace ClinicaLilian.Controllers
 {
     [Route("api/pacientes")]
     [ApiController]
-    public class PacientesController : ControllerBase
+    public class PacientesController : Controller
     {
         private readonly IPacienteService _pacienteService;
         private readonly IMapper _mapper;
@@ -23,14 +23,36 @@ namespace ClinicaLilian.Controllers
             _mapper = mapper;
         }
 
-        public IActionResult ObterTodosPacientes()
+        [HttpGet]
+        public IActionResult Index()
         {
             var pacientes =  _pacienteService.ObterTodosPacientes();
-
             if (pacientes == null)
                 return NotFound("Nenhum paciente encontrado");
 
-            return Ok(pacientes);
+            return View(pacientes);
+        }
+
+        public IActionResult PesquisarPorNome(string searchNome)
+        {
+            var pacientes = _pacienteService.ObterTodosPacientes();
+            if (pacientes == null)
+                return NotFound("Nenhum paciente encontrado");
+
+            return View(pacientes); 
+        }
+
+        [HttpGet("PesquisarPorCpf")]
+        public IActionResult PesquisarPorCpf(string searchCpf)
+        {
+            if (string.IsNullOrEmpty(searchCpf))
+            {
+                return BadRequest("CPF de pesquisa inválido");
+            }
+
+            var pacientes = _pacienteService.ObterPacientePeloCPF(searchCpf);
+
+            return View("Index", pacientes); // Reutiliza a view Index, pois a lógica é semelhante
         }
 
         public IActionResult ObterPacientePorId(int id)
@@ -43,11 +65,11 @@ namespace ClinicaLilian.Controllers
             return Ok(paciente);
         }
 
-        public IActionResult ObterTodosPacientesEnderecos()
-        {
-            var enderecos = _pacienteService.GetTodosPacientesEnderecos();
-            return Ok(enderecos);
-        }
+        //public IActionResult ObterTodosPacientesEnderecos()
+        //{
+        //    var enderecos = _pacienteService.GetTodosPacientesEnderecos();
+        //    return Ok(enderecos);
+        //}
 
         public IActionResult CriarPaciente(PacienteRegisterDTO pacienteDTO)
         {

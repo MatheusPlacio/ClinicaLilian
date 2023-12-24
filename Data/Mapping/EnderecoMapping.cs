@@ -21,7 +21,7 @@ namespace ApiLF.Mapping
 
 
             //EF
-            builder.HasMany(x => x.Paciente).WithOne(x => x.Endereco).HasForeignKey(x => x.EnderecoId);
+            //builder.HasMany(x => x.Paciente).WithOne(x => x.Endereco).HasForeignKey(x => x.EnderecoId);
         }
     }
 }

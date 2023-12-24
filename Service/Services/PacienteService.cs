@@ -7,6 +7,7 @@ using Domain.Interfaces.IService;
 using Domain.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using System.ComponentModel.DataAnnotations;
+using System.Xml.XPath;
 
 namespace Service.Services
 {
@@ -165,37 +166,50 @@ namespace Service.Services
             return true;
         }
 
-        public IList<PacienteEnderecoDTO> GetTodosPacientesEnderecos()
+        //public IList<PacienteEnderecoDTO> GetTodosPacientesEnderecos()
+        //{
+        //    IList<Paciente> pacientesEnderecos = _pacienteRepository.GetTodosPacientesEnderecos();
+
+        //    IList<PacienteEnderecoDTO> pacientesEnderecosDTO = pacientesEnderecos.Select(c => new PacienteEnderecoDTO
+        //    {
+        //        PacienteId = c.PacienteId,
+        //        Nome = c.Nome,
+        //        SobreNome = c.SobreNome,
+        //        DataDeNascimento = c.DataDeNascimento,
+        //        Genero = c.Genero,
+        //        CPF = c.CPF,
+        //        Celular = c.Celular,
+        //        Email = c.Email,
+        //        Profissao = c.Profissao,
+        //        PacienteEndereco = new PacienteEnderecoGetDTO
+        //        {
+        //            EnderecoId = c.EnderecoId,
+        //            Logradouro = c.Endereco.Logradouro,
+        //            Complemento = c.Endereco.Complemento,
+        //            Numero = c.Endereco.Numero,
+        //            Cep = c.Endereco.Cep,
+        //            Bairro = c.Endereco.Bairro,
+        //            localidade = c.Endereco.localidade,
+        //            UF = c.Endereco.UF
+        //        }
+
+        //    }).ToList();
+
+        //    return pacientesEnderecosDTO;
+        //}
+
+        public IList<PacienteDTO> ObterPacientePeloCPF(string cpf)
         {
-            IList<Paciente> pacientesEnderecos = _pacienteRepository.GetTodosPacientesEnderecos();
+            var pacienteCpf = _pacienteRepository.GetPacienteCpf(cpf);
 
-            IList<PacienteEnderecoDTO> pacientesEnderecosDTO = pacientesEnderecos.Select(c => new PacienteEnderecoDTO
-            {
-                PacienteId = c.PacienteId,
-                Nome = c.Nome,
-                SobreNome = c.SobreNome,
-                DataDeNascimento = c.DataDeNascimento,
-                Genero = c.Genero,
-                CPF = c.CPF,
-                Celular = c.Celular,
-                Email = c.Email,
-                Profissao = c.Profissao,
-                PacienteEndereco = new PacienteEnderecoGetDTO
-                {
-                    EnderecoId = c.EnderecoId,
-                    Logradouro = c.Endereco.Logradouro,
-                    Complemento = c.Endereco.Complemento,
-                    Numero = c.Endereco.Numero,
-                    Cep = c.Endereco.Cep,
-                    Bairro = c.Endereco.Bairro,
-                    localidade = c.Endereco.localidade,
-                    UF = c.Endereco.UF
-                }
+            if (pacienteCpf == null)
+                return null;
 
-            }).ToList();
+             var res = _mapper.Map<IList<PacienteDTO>>(pacienteCpf);
 
-            return pacientesEnderecosDTO;
+            return res;
         }
+
     }
 
 }

@@ -43,6 +43,6 @@ namespace Domain.Models
         //===========================================================================================================================//
 
         // EF
-        public List<Paciente> Paciente { get; set; }
+        //public List<Paciente> Paciente { get; set; }
     }
 }

@@ -1,9 +1,100 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-   @*  <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p> *@
-    <img class="animation__shake" src="~/img/Eu&Lilian.png.jpeg" alt="AdminLTELogo" height="800" width="800">
+﻿@* <div class="preloader flex-column justify-content-center align-items-center">
+    <img class="animation__shake" src="~/img/Eu&Lilian.png.jpeg" alt="AdminLTELogo" height="250" width="250" style="display: block; margin: auto;">
 </div>
+ *@
+
+@{
+    ViewData["Title"] = "Privacy Policy";
+}
+<!-- Main content -->
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header border-0">
+                        <div class="d-flex justify-content-between">
+                            <h3 class="card-title">Valor total de vendas esse mês</h3>
+                            <a href="javascript:void(0);">Ver Relatório</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <p class="d-flex flex-column">
+                                <span class="text-bold text-lg">5</span>
+                                <span>Polos Ativos</span>
+                            </p>
+                            <p class="ml-auto d-flex flex-column text-right">
+                                <span class="text-success">
+                                    <i class="fas fa-arrow-up"></i> 10%
+                                </span>
+                                <span class="text-muted">Desde o último mês</span>
+                            </p>
+                        </div>
+                        <!-- /.d-flex -->
+
+                        <div class="position-relative mb-4">
+                            <canvas id="polos-performance-chart" height="200"></canvas>
+                        </div>
+
+                        <div class="d-flex flex-row justify-content-end">
+                            <span class="mr-2">
+                                <i class="fas fa-square text-primary"></i> Este Ano
+                            </span>
+
+                            <span>
+                                <i class="fas fa-square text-gray"></i> Ano Passado
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- /.col-md-6 -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</div>
+<!-- /.content -->
+<!-- Script de Inicialização do Gráfico -->
+<script>
+    $(document).ready(function () {
+        var ctx = document.getElementById('polos-performance-chart').getContext('2d');
+        var polosChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho'],
+                datasets: [{
+                    label: 'Número de Polos Ativos',
+                    data: [4, 4, 5, 6, 5, 5],
+                    backgroundColor: 'rgba(0, 123, 255, 0.7)',
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    fill: false
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                legend: {
+                    display: true
+                },
+                scales: {
+                    xAxes: [{
+                        gridLines: {
+                            display: false
+                        }
+                    }],
+                    yAxes: [{
+                        gridLines: {
+                            display: true
+                        },
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    });
+</script>

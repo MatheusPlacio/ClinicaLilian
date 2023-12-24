@@ -12,6 +12,7 @@ namespace Domain.Interfaces.IService
         bool AtualizarPaciente(PacienteUpdateDTO pacienteDTO);
         bool AtualizarPacienteParcial(int id, JsonPatchDocument<Paciente> patchDocument);
         bool DeletarPaciente(int pacienteId);
-        IList<PacienteEnderecoDTO> GetTodosPacientesEnderecos();
+        IList<PacienteDTO> ObterPacientePeloCPF(string cpf);
+        //IList<PacienteEnderecoDTO> GetTodosPacientesEnderecos();
     }
 }

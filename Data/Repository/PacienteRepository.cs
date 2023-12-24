@@ -13,9 +13,9 @@ namespace Data.Repository
             _context = context;
         }
 
-        public IList<Paciente> GetTodosPacientesEnderecos()
+        public IList<Paciente> GetPacienteCpf(string cpf)
         {
-            var resultado =  _context.Pacientes.Include(x => x.Endereco).ToList();
+            var resultado = _context.Pacientes.Where(x => x.CPF == cpf).ToList();
 
             return resultado;
         }

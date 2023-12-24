@@ -4,6 +4,6 @@ namespace Domain.Interfaces.IRepository
 {
     public interface IPacienteRepository : IRepository<Paciente>
     {
-        IList<Paciente> GetTodosPacientesEnderecos();
+        IList<Paciente> GetPacienteCpf(string cpf);
     }
 }

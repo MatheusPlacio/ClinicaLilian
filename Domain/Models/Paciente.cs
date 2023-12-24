@@ -58,8 +58,8 @@ namespace Domain.Models
         //===========================================================================================================================//
 
         //EF
-        public Endereco Endereco { get; set; }
-        public int EnderecoId { get; set; }
+        //public Endereco Endereco { get; set; }
+        //public int EnderecoId { get; set; }
 
 
         public List<AgendamentosPacientes> AgendamentosPacientes { get; set; }

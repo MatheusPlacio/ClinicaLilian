@@ -1,5 +1,6 @@
 ﻿using Domain.DTOs.FuncionariosDTO;
 using Domain.Models;
+using Domain.Settings;
 using Microsoft.AspNetCore.JsonPatch;
 
 namespace Domain.Interfaces.IService
@@ -8,8 +9,8 @@ namespace Domain.Interfaces.IService
     {
         IList<FuncionarioDTO> ObterTodosFuncionarios();
         FuncionarioDTO ObterFuncionarioPorId(int id);
-        void CriarFuncionario(Funcionario funcionario);
-        bool AtualizarFuncionario(FuncionarioDTO funcionarioDTO);
+        ServiceResult CriarFuncionario(Funcionario funcionario);
+        ServiceResult AtualizarFuncionario(FuncionarioDTO funcionarioDTO);
         bool AtualizarFuncionarioParcial(int id, JsonPatchDocument<Funcionario> patchDocument);
         bool DeletarFuncionario(int funcionarioId);
 

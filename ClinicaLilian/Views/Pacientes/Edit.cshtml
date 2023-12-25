@@ -1,1 +1,145 @@
-﻿
+﻿@model Domain.DTOs.PacientesDTO.PacienteUpdateDTO
+
+@{
+    ViewData["Title"] = "Editar Paciente";
+}
+
+<div class="container">
+    <h2 class="mt-4 mb-4">Editar Paciente</h2>
+    @* Verifica se há erros no ModelState *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <form asp-action="Edit" asp-controller="Pacientes" method="post">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="PacienteId" />
+
+        <div class="form-group">
+            <label asp-for="Nome">Nome</label>
+            <input asp-for="Nome" class="form-control" />
+            <span asp-validation-for="Nome" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="SobreNome">Sobrenome</label>
+            <input asp-for="SobreNome" class="form-control" />
+            <span asp-validation-for="SobreNome" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DataDeNascimento">Data de Nascimento</label>
+            <div class="input-group">
+                <input asp-for="DataDeNascimento" class="form-control small-date-input date-of-birth" style="width: 170px;" type="text" placeholder="dd/MM/yyyy" />
+                <div class="input-group-append">
+                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                </div>
+            </div>
+            <span asp-validation-for="DataDeNascimento" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Genero">Gênero</label>
+            <select asp-for="Genero" class="form-control">
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Prefiro não dizer">Prefiro não dizer</option>
+            </select>
+            <span asp-validation-for="Genero" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="CPF">CPF</label>
+            <input asp-for="CPF" class="form-control" />
+            <span asp-validation-for="CPF" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Celular">Celular</label>
+            <input asp-for="Celular" class="form-control" />
+            <span asp-validation-for="Celular" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Email">Email</label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Profissao">Profissão</label>
+            <input asp-for="Profissao" class="form-control" />
+            <span asp-validation-for="Profissao" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Idade">Idade (será calculada automaticamente)</label>
+            <input asp-for="Idade" class="form-control small-input age-input" style="width: 70px;" readonly />
+            <span asp-validation-for="Idade" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <a href="@Url.Action("Index", "Pacientes")" class="btn btn-secondary">Cancelar</a>
+            </div>
+            <div class="col-6 text-right">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.date-of-birth').on('input', function () {
+                var value = $(this).val();
+                if (value.length === 2 || value.length === 5) {
+                    $(this).val(value + '/');
+                }
+
+                // Quando a data de nascimento é alterada
+                var dateOfBirth = $(this).val();
+
+                // Calcular a idade
+                var age = calculateAge(parseDate(dateOfBirth));
+
+                // Atualizar o valor do campo de idade
+                $('.age-input').val(age);
+            });
+
+            // Função para calcular a idade
+            function calculateAge(birthDate) {
+                var currentDate = new Date();
+                var age = currentDate.getFullYear() - birthDate.getFullYear();
+
+                // Ajustar a idade se ainda não tiver feito aniversário neste ano
+                if (currentDate.getMonth() < birthDate.getMonth() || (currentDate.getMonth() === birthDate.getMonth() && currentDate.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+
+                return age;
+            }
+
+            // Função para converter a string de data no formato 'dd/MM/yyyy' para um objeto Date
+            function parseDate(dateString) {
+                var parts = dateString.split('/');
+                // new Date(year, month (0-based), day)
+                return new Date(parts[2], parts[1] - 1, parts[0]);
+            }
+        });
+    </script>
+}
+

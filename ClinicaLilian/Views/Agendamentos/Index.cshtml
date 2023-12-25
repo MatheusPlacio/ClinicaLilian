@@ -1,1 +1,77 @@
-﻿
+﻿@model IEnumerable<Domain.DTOs.AgendamentosDTO.AgendamentoFuncionProcedimentosDTO>
+
+@{
+    ViewData["Title"] = "Lista de Agendamentos";
+}
+
+<div class="container">
+    <h2 class="mt-4 mb-4">Lista de Agendamentos</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Procedimento</th>
+                    <th>Data e Hora</th>
+                    <th>Sessões</th>
+                    <th>Observação</th>
+                    <th>Paciente</th>
+                    <th>Funcionário</th>
+                    <th>Ações</th> <!-- Nova coluna para botões de ação -->
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var agendamento in Model)
+                {
+                    <tr>
+                        <td>@agendamento.ProcedimentoAgendamento.NomeProcedimento</td>
+                        <td>@agendamento.ProcedimentoAgendamento.DataHoraMarcada.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@agendamento.ProcedimentoAgendamento.Sessoes</td>
+                        <td>@agendamento.ProcedimentoAgendamento.Observacao</td>
+                        <td>@($"{agendamento.Paciente.Nome} {agendamento.Paciente.SobreNome}")</td>
+                        <td>@($"{agendamento.Funcionario.Nome} {agendamento.Funcionario.SobreNome}")</td>
+                        <td>
+                            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#details@(agendamento.ProcedimentoAgendamento.ProcedimentoAgendamentoId)">
+                                <span class="icon-expand">
+                                    <i class="fa fa-caret-down"></i> <!-- Ícone para expandir -->
+                                </span>
+                                <span class="icon-collapse">
+                                    <i class="fa fa-caret-right"></i> <!-- Ícone para retrair -->
+                                </span>
+                            </button>
+
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="7" class="hiddenRow">
+                            <div class="accordian-body collapse" id="details@(agendamento.ProcedimentoAgendamento.ProcedimentoAgendamentoId)">
+                                <p><strong>Detalhes do Funcionário:</strong></p>
+                                <p>Nome: @agendamento.Funcionario.Nome</p>
+                                <p>Sobrenome: @agendamento.Funcionario.SobreNome</p>
+
+                                <p>Especialidade: @agendamento.Funcionario.Especialidade</p>
+                                <hr />
+                                <p><strong>Detalhes do Paciente:</strong></p>
+                                <p>Nome: @agendamento.Paciente.Nome</p>
+                                <p>Sobrenome: @agendamento.Paciente.SobreNome</p>
+                                <p>Data de Nascimento: @agendamento.Paciente.DataDeNascimento</p>
+                                <p>Gênero: @agendamento.Paciente.Genero</p>
+                                <p>CPF: @agendamento.Paciente.CPF</p>
+                                <p>Celular: @agendamento.Paciente.Celular</p>
+                                <p>Email: @agendamento.Paciente.Email</p>
+                                <p>Profissão: @agendamento.Paciente.Profissao</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Voltar</a>
+        </div>
+    </div>
+</div>

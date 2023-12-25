@@ -1,1 +1,52 @@
-﻿
+﻿@model Domain.DTOs.FuncionariosDTO.FuncionarioDTO
+
+@{
+    ViewData["Title"] = "Detalhes do Funcionário";
+}
+
+<style>
+    .field-label {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .field-value {
+        font-size: 18px;
+    }
+</style>
+
+<div class="container">
+    <h2 class="mt-4 mb-4">Detalhes do Funcionário</h2>
+
+    <dl class="row">
+        <dt class="col-sm-2 field-label">Nome:</dt>
+        <dd class="col-sm-10 field-value">@Model.Nome</dd>
+
+        <dt class="col-sm-2 field-label">Sobrenome:</dt>
+        <dd class="col-sm-10 field-value">@Model.SobreNome</dd>
+
+        <dt class="col-sm-2 field-label">Idade:</dt>
+        <dd class="col-sm-10 field-value">@Model.Idade</dd>
+
+        <dt class="col-sm-2 field-label">Data de Nascimento:</dt>
+        <dd class="col-sm-10 field-value">@Model.DataNascimento</dd>
+
+        <dt class="col-sm-2 field-label">CPF:</dt>
+        <dd class="col-sm-10 field-value">@Model.CPF</dd>
+
+        <dt class="col-sm-2 field-label">Celular:</dt>
+        <dd class="col-sm-10 field-value">@Model.Celular</dd>
+
+        <dt class="col-sm-2 field-label">Email:</dt>
+        <dd class="col-sm-10 field-value">@Model.Email</dd>
+
+        <dt class="col-sm-2 field-label">Especialidade:</dt>
+        <dd class="col-sm-10 field-value">@Model.Especialidade</dd>
+    </dl>
+
+    <div class="row">
+        <div class="col-12">
+            <a href="@Url.Action("Index", "Funcionarios")" class="btn btn-secondary">Voltar</a>
+        </div>
+    </div>
+</div>

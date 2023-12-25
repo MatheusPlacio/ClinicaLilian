@@ -61,6 +61,7 @@ namespace Service.Services
                 Paciente = new PacienteDTO
                 {
                     PacienteId = p.AgendamentosPacientes.FirstOrDefault()?.Paciente.PacienteId ?? 0,
+                    Idade = p.AgendamentosPacientes.FirstOrDefault()?.Paciente.Idade ?? 0,
                     Nome = p.AgendamentosPacientes.FirstOrDefault()?.Paciente.Nome ?? "Nome não informado",
                     SobreNome = p.AgendamentosPacientes.FirstOrDefault()?.Paciente.SobreNome ?? "SobreNome não informado",
                     DataDeNascimento = p.AgendamentosPacientes.FirstOrDefault()?.Paciente.DataDeNascimento.ToString("dd/MM/yyyy") ?? "Data de Nascimento não informada",
@@ -76,6 +77,10 @@ namespace Service.Services
                     Nome = p.Funcionario.Nome,
                     SobreNome = p.Funcionario.SobreNome,
                     Idade = p.Funcionario.Idade,
+                    CPF = p.Funcionario.CPF,
+                    Celular = p.Funcionario.Celular,
+                    Email = p.Funcionario.Email,
+                    DataNascimento = p.Funcionario.DataNascimento.ToString("dd/MM/yyyy"),
                     Especialidade = p.Funcionario.Especialidade
                 },
             }).ToList();

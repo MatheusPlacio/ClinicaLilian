@@ -1,5 +1,6 @@
 ﻿using Domain.DTOs.PacientesDTO;
 using Domain.Models;
+using Domain.Settings;
 using Microsoft.AspNetCore.JsonPatch;
 
 namespace Domain.Interfaces.IService
@@ -8,8 +9,8 @@ namespace Domain.Interfaces.IService
     {
         IList<PacienteDTO> ObterTodosPacientes();
         PacienteDTO? ObterPacientePorId(int id);
-        void CriarPaciente(Paciente paciente);
-        bool AtualizarPaciente(PacienteUpdateDTO pacienteDTO);
+        ServiceResult CriarPaciente(Paciente paciente);
+        ServiceResult AtualizarPaciente(PacienteUpdateDTO pacienteDTO);
         bool AtualizarPacienteParcial(int id, JsonPatchDocument<Paciente> patchDocument);
         bool DeletarPaciente(int pacienteId);
         IList<PacienteDTO> ObterPacientePeloCPF(string cpf);

@@ -1,1 +1,127 @@
-﻿
+﻿@model IEnumerable<Domain.DTOs.FuncionariosDTO.FuncionarioDTO>
+
+@{
+    var pageSize = 4; // Número de itens por página
+    int pageNumber;
+    int.TryParse(Context.Request.Query["page"], out pageNumber);
+    pageNumber = pageNumber <= 0 ? 1 : pageNumber;
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Funcionários</h1>
+            </div>
+            <div class="col-sm-6">
+                <a href="@Url.Action("Create", "Funcionarios")" class="btn btn-success float-right">
+                    Novo Funcionário
+                </a>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Listagem dos Funcionários</h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped projects">
+                <thead>
+                    <tr>
+                        <th style="width: 15%">Nome</th>
+                        <th style="width: 15%">Sobrenome</th>
+                        <th style="width: 10%">Idade</th>
+                        <th style="width: 10%">Data de Nascimento</th>
+                        <th style="width: 10%">CPF</th>
+                        <th style="width: 15%">Celular</th>
+                        <th style="width: 15%">Email</th>
+                        <th style="width: 15%">Especialidade</th>
+                        <th style="width: 10%">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var funcionario in Model.Skip((pageNumber - 1) * pageSize).Take(pageSize))
+                    {
+                        <tr>
+                            <td>
+                                <input type="text" class="form-control" readonly value="@funcionario.Nome">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" readonly value="@funcionario.SobreNome">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" readonly value="@funcionario.Idade">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" readonly value="@funcionario.DataNascimento">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" readonly value="@funcionario.CPF">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" readonly value="@funcionario.Celular">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" readonly value="@funcionario.Email">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" readonly value="@funcionario.Especialidade">
+                            </td>
+                            <td class="project-actions text-right">
+                                <div class="btn-group-vertical">
+                                    <a class="btn btn-primary btn-sm mb-2" href="@Url.Action("ObterFuncionarioPorId", "Funcionarios", new { id = funcionario.FuncionarioId })">
+                                        <i class="fas fa-eye"></i> Visualizar
+                                    </a>
+                                    <a class="btn btn-info btn-sm mb-2" href="@Url.Action("Edit", "Funcionarios", new { id = funcionario.FuncionarioId })">
+                                        <i class="fas fa-pencil-alt"></i> Editar
+                                    </a>
+                                    <form action="@Url.Action("DeletarFuncionario", "Funcionarios")" method="post" style="display: inline-block;">
+                                        <input type="hidden" name="Id" value="@funcionario.FuncionarioId" />
+                                        <button type="submit" class="btn btn-danger btn-sm mb-2" onclick="return confirm('Tem certeza que deseja excluir este funcionário?');">
+                                            <i class="fas fa-trash"></i> Excluir
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer clearfix">
+            <div class="d-flex justify-content-center mt-3">
+                <!-- Paginação simples com links para páginas anteriores e próximas -->
+                @if (pageNumber > 1)
+                {
+                    <a href="@Url.Action("Index", new { page = pageNumber - 1 })" class="btn btn-primary">Página Anterior</a>
+                }
+                @if (Model.Count() > pageNumber * pageSize)
+                {
+                    <a href="@Url.Action("Index", new { page = pageNumber + 1 })" class="btn btn-primary ml-2">Próxima Página</a>
+                }
+            </div>
+        </div>
+        <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+</section>
+
+<aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+</aside>
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>

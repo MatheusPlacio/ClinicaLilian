@@ -8,9 +8,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClinicaLilian.Controllers
 {
-    [Route("api/agendamentos")]
-    [ApiController]
-    public class AgendamentosController : ControllerBase
+    public class AgendamentosController : Controller
     {
         private readonly IAgendamentoService _agendamentoService;
         public AgendamentosController(IAgendamentoService agendamentoService )
@@ -18,14 +16,14 @@ namespace ClinicaLilian.Controllers
             _agendamentoService = agendamentoService;
         }
 
-        public IActionResult ObterTodosAgendamentosFuncionariosProcedimentos()
+        public IActionResult Index()
         {
             var agendamentos = _agendamentoService.ObterTodosAgendamentosFuncionariosProcedimentos();
 
             if (agendamentos == null)
                 return NotFound("Nenhum paciente encontrado");
 
-            return Ok(agendamentos);
+            return View(agendamentos);
         }
 
         public IActionResult ObterTodosAgendamentosFuncionariosProcedimentosPorId(int id)

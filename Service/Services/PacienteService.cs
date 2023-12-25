@@ -5,6 +5,7 @@ using Domain.DTOs.PacientesDTO;
 using Domain.Interfaces.IRepository;
 using Domain.Interfaces.IService;
 using Domain.Models;
+using Domain.Settings;
 using Microsoft.AspNetCore.JsonPatch;
 using System.ComponentModel.DataAnnotations;
 using System.Xml.XPath;
@@ -60,25 +61,35 @@ namespace Service.Services
                 CPF = resultado.CPF,
                 Email = resultado.Email,
                 Celular = resultado.Celular,
-                Profissao = resultado.Profissao
+                Profissao = resultado.Profissao,
+                Idade = resultado.Idade
             };
 
             return pacientesDTO;
         }
 
-        public void CriarPaciente(Paciente paciente)
+        public ServiceResult CriarPaciente(Paciente paciente)
         {
-            if (_pacienteRepository.Buscar(c => c.CPF == paciente.CPF).Any())
-                throw new Exception("Documento já cadastrado no sistema");
+            var existingPaciente = _pacienteRepository.Buscar(c => (c.CPF == paciente.CPF));
 
-            else if (_pacienteRepository.Buscar(c => c.Celular == paciente.Celular).Any())
-                throw new Exception("Celular já cadastrado no sistema");
+            if (existingPaciente.Any())
+            {
+                return new ServiceResult { Success = false, ErrorMessage = "Já existe um paciente com este CPF." };
+            }
+
+            var existingCelular = _pacienteRepository.Buscar(c => (c.Celular == paciente.Celular));
+
+            if (existingCelular.Any())
+            {
+                return new ServiceResult { Success = false, ErrorMessage = "Já existe um paciente com este número de celular." };
+            }
 
             paciente.DataDeNascimento.ToString("dd/MM/yyyy");
 
             try
             {
                 _pacienteRepository.Add(paciente);
+                return new ServiceResult { Success = true };
             }
             catch (Exception ex)
             {
@@ -86,12 +97,21 @@ namespace Service.Services
             }
         }
 
-        public bool AtualizarPaciente(PacienteUpdateDTO pacienteDTO)
+        public ServiceResult AtualizarPaciente(PacienteUpdateDTO pacienteDTO)
         {
             var existingPaciente = _pacienteRepository.Buscar(c => (c.CPF == pacienteDTO.CPF) && c.PacienteId != pacienteDTO.PacienteId);
 
             if (existingPaciente.Any())
-                return false;
+            {
+                return new ServiceResult { Success = false, ErrorMessage = "Já existe um paciente com este CPF." };
+            }
+
+            var existingCelular = _pacienteRepository.Buscar(c => (c.Celular == pacienteDTO.Celular) && c.PacienteId != pacienteDTO.PacienteId);
+
+            if (existingCelular.Any())
+            {
+                return new ServiceResult { Success = false, ErrorMessage = "Já existe um paciente com este número de celular." };
+            }
 
             try
             {
@@ -99,19 +119,18 @@ namespace Service.Services
 
                 if (pacienteDb == null)
                 {
-                    throw new Exception("Paciente não encontrado");
+                    return new ServiceResult { Success = false, ErrorMessage = "Paciente não encontrado" };
                 }
 
                 _mapper.Map(pacienteDTO, pacienteDb);
 
                 _pacienteRepository.Update(pacienteDb);
 
-                return true;
+                return new ServiceResult { Success = true };
             }
-
             catch (Exception ex)
             {
-                throw new Exception($"{ex}");
+                return new ServiceResult { Success = false, ErrorMessage = $"Erro ao atualizar paciente: {ex.Message}" };
             }
         }
 

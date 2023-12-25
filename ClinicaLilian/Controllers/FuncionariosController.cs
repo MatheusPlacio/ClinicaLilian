@@ -12,9 +12,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClinicaLilian.Controllers
 {
-    [Route("api/funcionarios")]
-    [ApiController]
-    public class FuncionariosController : ControllerBase
+    public class FuncionariosController : Controller
     {
         private readonly IFuncionarioService _funcionarioService;
         private readonly IMapper _mapper;
@@ -25,59 +23,104 @@ namespace ClinicaLilian.Controllers
             _mapper = mapper;
         }
 
-        public IActionResult ObterTodosFuncionarios()
+        [HttpGet]
+        public IActionResult Index()
         {
             var funcionarios = _funcionarioService.ObterTodosFuncionarios();
 
             if (funcionarios == null)
                 return NotFound("Nenhum funcionário encontrado");
 
-            return Ok(funcionarios);
+            return View(funcionarios);
         }
 
-        public IActionResult ObterFuncionarioPorId(int id)
+        public IActionResult ObterFuncionarioPorId(string id)
         {
-            var funcionario = _funcionarioService.ObterFuncionarioPorId(id);
-            if (funcionario == null)
+            if (int.TryParse(id, out int funcionarioId))
             {
-                return NotFound("Funcionário não encontrado");
+                var funcionario = _funcionarioService.ObterFuncionarioPorId(funcionarioId);
+                if (funcionario == null)
+                {
+                    return NotFound();
+                }
+                return View("Details", funcionario);
             }
-            return Ok(funcionario);
+            else
+            {
+                return BadRequest("ID inválido");
+            }
         }
 
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
         public IActionResult CriarFuncionario(FuncionarioDTO funcionarioDTO)
         {
             try
             {
-                _funcionarioService.CriarFuncionario(_mapper.Map<Funcionario>(funcionarioDTO));
+                var result = _funcionarioService.CriarFuncionario(_mapper.Map<Funcionario>(funcionarioDTO));
+                if (!result.Success)
+                {
+                    // Se houver erros de validação, adicione mensagens ao ModelState
+                    if (!string.IsNullOrEmpty(result.ErrorMessage))
+                    {
+                        ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    }
+
+                    return View("Create", funcionarioDTO);
+                }
+
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                throw ex;
+                ViewBag.ErrorMessage = "Ocorreu um erro ao criar o paciente: " + ex.Message;
+                return View("Create", funcionarioDTO); // Retorna à página de criação com uma mensagem de erro
             }
-
-            return CreatedAtAction(nameof(CriarFuncionario), new { id = funcionarioDTO.FuncionarioId }, null);
         }
 
-        public async Task<IActionResult> AtualizarFuncionario(FuncionarioDTO funcionarioDTO)
+        public IActionResult Edit(int id)
+        {
+            var funcionario = _funcionarioService.ObterFuncionarioPorId(id);
+            if (funcionario == null)
+            {
+                return NotFound();
+            }
+
+            // Aqui você pode retornar a view com o formulário de edição
+            return View("Edit", funcionario);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(FuncionarioDTO funcionarioDTO)
         {
             try
             {
                 var result = _funcionarioService.AtualizarFuncionario(funcionarioDTO);
-                if (!result)
-                    return BadRequest("Funcionário não encontrado");
+                if (!result.Success)
+                {
+                    // Se houver erros de validação, adicione mensagens ao ModelState
+                    if (!string.IsNullOrEmpty(result.ErrorMessage))
+                    {
+                        ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    }
 
-                return Ok(funcionarioDTO);
+                    // Retorne a view com os erros
+                    return View(funcionarioDTO);
+                }
+
+                // Aqui você redireciona para a view de detalhes (ou outra view desejada)
+                return RedirectToAction("Index");
             }
-
-            catch (ValidationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
             catch (Exception ex)
             {
-                return StatusCode(500, $"Erro no servidor: {ex.Message}");
+                // Trate exceções adequadamente, por exemplo, log ou retornar BadRequest
+                return BadRequest($"Erro ao atualizar o funcionário: {ex.Message}");
             }
         }
 
@@ -106,7 +149,7 @@ namespace ClinicaLilian.Controllers
             }
         }
 
-        public IActionResult DeletarPaciente(int id)
+        public IActionResult DeletarFuncionario(int id)
         {
             try
             {
@@ -114,12 +157,12 @@ namespace ClinicaLilian.Controllers
                 if (!result)
                     return NotFound("Funcionário não encontrado");
 
-                return Ok("Funcionário excluído com sucesso");
+                return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
-                throw ex;
+                return BadRequest("Erro ao excluir paciente");
             }
         }
 

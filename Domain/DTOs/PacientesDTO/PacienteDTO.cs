@@ -22,5 +22,6 @@ namespace Domain.DTOs.PacientesDTO
         public string Email { get; set; }
         //===========================================================================================================================//
         public string? Profissao { get; set; }
+        public int? Idade { get; set; }
     }
 }

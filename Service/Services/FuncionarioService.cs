@@ -5,6 +5,7 @@ using Domain.DTOs.PacientesDTO;
 using Domain.Interfaces.IRepository;
 using Domain.Interfaces.IService;
 using Domain.Models;
+using Domain.Settings;
 using Microsoft.AspNetCore.JsonPatch;
 using System.ComponentModel.DataAnnotations;
 
@@ -27,7 +28,7 @@ namespace Service.Services
         public IList<FuncionarioDTO> ObterTodosFuncionarios()
         {
             IList<Funcionario> funcionarios = _funcionarioRepository.Get();
-            IList<FuncionarioDTO> funcionariosDTO = funcionarios.Select(p => new FuncionarioDTO
+            IList<FuncionarioDTO> funcionariosDTO = funcionarios.OrderBy(x => x.Nome).Select(p => new FuncionarioDTO
             {
                FuncionarioId = p.FuncionarioId,
                Nome = p.Nome,
@@ -66,22 +67,28 @@ namespace Service.Services
             return funcionarioDTO;
         }
 
-        public void CriarFuncionario(Funcionario funcionario)
+        public ServiceResult CriarFuncionario(Funcionario funcionario)
         {
-            if (_funcionarioRepository.Buscar(c => c.CPF == funcionario.CPF).Any())
-                throw new Exception("Documento já cadastrado no sistema");
+            var existingFuncionario = _funcionarioRepository.Buscar(c => (c.CPF == funcionario.CPF));
 
-            if (_pacienteRepository.Buscar(c => c.CPF == funcionario.CPF).Any())
-                throw new Exception("Documento já cadastrado no sistema");
+            if (existingFuncionario.Any())
+            {
+                return new ServiceResult { Success = false, ErrorMessage = "Já existe um funcionário com este CPF." };
+            }
 
-            else if (_funcionarioRepository.Buscar(c => c.Celular == funcionario.Celular).Any())
-                throw new Exception("Celular já cadastrado no sistema");
+            var existingCelular = _funcionarioRepository.Buscar(c => (c.Celular == funcionario.Celular));
+
+            if (existingCelular.Any())
+            {
+                return new ServiceResult { Success = false, ErrorMessage = "Já existe um funcionário com este número de celular." };
+            }
 
             funcionario.DataNascimento.ToString("dd/MM/yyyy");
 
             try
             {
                 _funcionarioRepository.Add(funcionario);
+                return new ServiceResult { Success = true };
             }
             catch (Exception ex)
             {
@@ -89,33 +96,40 @@ namespace Service.Services
             }
         }
 
-        public bool AtualizarFuncionario(FuncionarioDTO funcionarioDTO)
+        public ServiceResult AtualizarFuncionario(FuncionarioDTO funcionarioDTO)
         {
+            var existingFuncionario = _funcionarioRepository.Buscar(c => (c.CPF == funcionarioDTO.CPF) && c.FuncionarioId != funcionarioDTO.FuncionarioId);
+
+            if (existingFuncionario.Any())
+            {
+                return new ServiceResult { Success = false, ErrorMessage = "Já existe um funcionário com este CPF." };
+            }
+
+            var existingCelular = _funcionarioRepository.Buscar(c => (c.Celular == funcionarioDTO.Celular) && c.FuncionarioId != funcionarioDTO.FuncionarioId);
+
+            if (existingCelular.Any())
+            {
+                return new ServiceResult { Success = false, ErrorMessage = "Já existe um funcionário com este número de celular." };
+            }
+
             try
             {
-                Funcionario? funcionarioDb = _funcionarioRepository.GetById(funcionarioDTO.FuncionarioId);
+                var funcionarioDb = _funcionarioRepository.GetById(funcionarioDTO.FuncionarioId);
 
                 if (funcionarioDb == null)
-                    return false;
-
-                if (_funcionarioRepository.Buscar(c => (c.CPF == funcionarioDTO.CPF) && c.FuncionarioId != funcionarioDTO.FuncionarioId).Any())
-                    throw new ValidationException("Documento já cadastrado no sistema.");
+                {
+                    return new ServiceResult { Success = false, ErrorMessage = "funcionário não encontrado" };
+                }
 
                 _mapper.Map(funcionarioDTO, funcionarioDb);
 
                 _funcionarioRepository.Update(funcionarioDb);
 
-                return true;
+                return new ServiceResult { Success = true };
             }
-
-            catch (ValidationException ex)
-            {
-                throw ex;
-            }
-
             catch (Exception ex)
             {
-                throw new ServiceException("Falha ao atualizar o funcionário.", ex);
+                return new ServiceResult { Success = false, ErrorMessage = $"Erro ao atualizar paciente: {ex.Message}" };
             }
         }
 

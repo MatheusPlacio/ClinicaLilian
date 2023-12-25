@@ -46,5 +46,6 @@ namespace Domain.DTOs.PacientesDTO
 
         //============================================================================================================================//
         public string? Profissao { get; set; }
+        public int? Idade { get; set; }
     }
 }

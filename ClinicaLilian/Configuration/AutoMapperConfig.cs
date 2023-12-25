@@ -12,6 +12,8 @@ namespace ClinicaLilian.Configuration
             CreateMap<PacienteRegisterDTO, Paciente>().ReverseMap();
             CreateMap<PacienteUpdateDTO, Paciente>().ReverseMap();
             CreateMap<PacienteDTO, Paciente>().ReverseMap();
+            CreateMap<PacienteDTO, PacienteUpdateDTO>().ReverseMap();
+            CreateMap<PacienteUpdateDTO, PacienteDTO>().ReverseMap();
 
 
             CreateMap<FuncionarioDTO, Funcionario>().ReverseMap();

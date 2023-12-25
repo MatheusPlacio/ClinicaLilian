@@ -112,13 +112,13 @@
                                 </td>
                                 <td class="project-actions text-right">
                                     <div class="btn-group-vertical">
-                                        <a class="btn btn-primary btn-sm mb-2" href="@Url.Action("Details", "Pacientes", new { id = paciente.PacienteId })">
+                                    <a class="btn btn-primary btn-sm mb-2" href="@Url.Action("ObterPacientePorId", "Pacientes", new { id = paciente.PacienteId })">
                                             <i class="fas fa-eye"></i> Visualizar
                                         </a>
-                                        <a class="btn btn-info btn-sm mb-2" href="@Url.Action("AtualizarPaciente", "Pacientes", new { id = paciente.PacienteId })">
-                                            <i class="fas fa-pencil-alt"></i> Editar
-                                        </a>
-                                        <form action="@Url.Action("Delete", "Pacientes")" method="post" style="display: inline-block;">
+                                    <a class="btn btn-info btn-sm mb-2" href="@Url.Action("Edit", "Pacientes", new { id = paciente.PacienteId })">
+                                        <i class="fas fa-pencil-alt"></i> Editar
+                                    </a>
+                                    <form action="@Url.Action("DeletarPaciente", "Pacientes")" method="post" style="display: inline-block;">
                                             <input type="hidden" name="Id" value="@paciente.PacienteId" />
                                             <button type="submit" class="btn btn-danger btn-sm mb-2" onclick="return confirm('Tem certeza que deseja excluir este paciente?');">
                                                 <i class="fas fa-trash"></i> Excluir

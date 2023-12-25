@@ -53,20 +53,26 @@ namespace ClinicaLilian.Controllers
             return View("Index", pacientes); // Reutiliza a view Index, pois a lógica é semelhante
         }
 
-        public IActionResult ObterPacientePorId(int id)
+        public IActionResult ObterPacientePorId(string id)
         {
-            var paciente =  _pacienteService.ObterPacientePorId(id);
-            if (paciente == null)
+            if (int.TryParse(id, out int pacienteId))
             {
-                return NotFound();
+                var paciente = _pacienteService.ObterPacientePorId(pacienteId);
+                if (paciente == null)
+                {
+                    return NotFound();
+                }
+                return View("Details", paciente);
             }
-            return Ok(paciente);
+            else
+            {
+                return BadRequest("ID inválido");
+            }
         }
 
 
         public IActionResult Create()
         {
-            // Lógica da Action
             return View();
         }
 
@@ -74,35 +80,68 @@ namespace ClinicaLilian.Controllers
         public IActionResult CriarPaciente(PacienteRegisterDTO pacienteDTO)
         {
             try
-            {
-                _pacienteService.CriarPaciente(_mapper.Map<Paciente>(pacienteDTO));
+            {               
+                var result = _pacienteService.CriarPaciente(_mapper.Map<Paciente>(pacienteDTO));
+                if (!result.Success)
+                {
+                    // Se houver erros de validação, adicione mensagens ao ModelState
+                    if (!string.IsNullOrEmpty(result.ErrorMessage))
+                    {
+                        ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    }
 
-                // Redireciona para a lista de pacientes (por exemplo, a action Index)
+                    return View("Create", pacienteDTO);
+                }
+
+                // Aqui você redireciona para a view de detalhes (ou outra view desejada)
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                // Lida com exceções de maneira apropriada (pode ser interessante logar o erro, exibir uma mensagem ao usuário, etc.)
                 ViewBag.ErrorMessage = "Ocorreu um erro ao criar o paciente: " + ex.Message;
                 return View("Create", pacienteDTO); // Retorna à página de criação com uma mensagem de erro
             }
         }
 
+        public IActionResult Edit(int id)
+        {
+            var paciente = _pacienteService.ObterPacientePorId(id);
+            if (paciente == null)
+            {
+                return NotFound();
+            }
 
-        public async Task<IActionResult> AtualizarPaciente(PacienteUpdateDTO pacienteDTO)
+            var pacienteUpdateDTO = _mapper.Map<PacienteUpdateDTO>(paciente);
+
+            // Aqui você pode retornar a view com o formulário de edição
+            return View("Edit", pacienteUpdateDTO);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(PacienteUpdateDTO pacienteDTO)
         {
             try
             {
                 var result = _pacienteService.AtualizarPaciente(pacienteDTO);
-                if (!result)
-                    return NotFound("Paciente não encontrado");
+                if (!result.Success)
+                {
+                    // Se houver erros de validação, adicione mensagens ao ModelState
+                    if (!string.IsNullOrEmpty(result.ErrorMessage))
+                    {
+                        ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    }
 
-                return Ok(pacienteDTO);
+                    // Retorne a view com os erros
+                    return View(pacienteDTO);
+                }
+
+                // Aqui você redireciona para a view de detalhes (ou outra view desejada)
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                // Trate exceções adequadamente, por exemplo, log ou retornar BadRequest
+                return BadRequest($"Erro ao atualizar paciente: {ex.Message}");
             }
         }
 
@@ -139,13 +178,15 @@ namespace ClinicaLilian.Controllers
                 if (!result)
                     return NotFound("Paciente não encontrado");
 
-                return Ok("Paciente excluído com sucesso");
+                // Redirecionar para a ação Index do controlador Pacientes
+                return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return BadRequest("Erro ao excluir paciente");
             }
         }
+
     }
 
 

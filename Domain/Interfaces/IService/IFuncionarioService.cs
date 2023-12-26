@@ -1,4 +1,5 @@
-﻿using Domain.DTOs.FuncionariosDTO;
+﻿using Domain.DTOs.AgendamentosDTO;
+using Domain.DTOs.FuncionariosDTO;
 using Domain.Models;
 using Domain.Settings;
 using Microsoft.AspNetCore.JsonPatch;
@@ -13,6 +14,7 @@ namespace Domain.Interfaces.IService
         ServiceResult AtualizarFuncionario(FuncionarioDTO funcionarioDTO);
         bool AtualizarFuncionarioParcial(int id, JsonPatchDocument<Funcionario> patchDocument);
         bool DeletarFuncionario(int funcionarioId);
+        IList<AgendamentoFuncionProcedimentosRegisterDTO> BuscarFuncionariosAgendamentos();
 
     }
 }

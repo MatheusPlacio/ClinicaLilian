@@ -9,7 +9,10 @@ namespace Domain.DTOs.AgendamentosDTO
         public AgendamentoProcediRegisterDTO AgendamentoProcedimentoRegisterDTO { get; set; }
 
         //===========================================================================================================================//
+         
+        //Procedimento
         public int ProcedimentoId { get; set; }
+        public string NomeProcedimento { get; set; }
 
         //===========================================================================================================================//
 
@@ -19,7 +22,7 @@ namespace Domain.DTOs.AgendamentosDTO
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         [StringLength(30, ErrorMessage = "O campo {0} deve ter no máximo {1} caracteres")]
-        public string Nome { get; set; }
+        public string NomePaciente { get; set; }
 
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
@@ -59,5 +62,6 @@ namespace Domain.DTOs.AgendamentosDTO
 
         //FUNCIONARIO
         public int FuncionarioId { get; set; }
+        public string NomeFuncionario { get; set; }
     }
 }

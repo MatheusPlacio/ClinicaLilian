@@ -155,7 +155,7 @@ namespace Service.Services
             {
                 newPaciente = new Paciente
                 {
-                    Nome = agendamentoDTO.Nome,
+                    Nome = agendamentoDTO.NomePaciente,
                     SobreNome = agendamentoDTO.SobreNome,
                     DataDeNascimento = agendamentoDTO.DataDeNascimento,
                     Genero = agendamentoDTO.Genero,

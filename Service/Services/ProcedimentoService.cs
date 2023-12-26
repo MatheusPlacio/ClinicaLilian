@@ -41,5 +41,18 @@ namespace Service.Services
             return procedimentoDTO;
         }
 
+        public IList<AgendamentoFuncionProcedimentosRegisterDTO> BuscarProcedimentosAgendamentos()
+        {
+            IList<Procedimento> procedimentos = _procedimentoRepository.Get();
+
+            IList<AgendamentoFuncionProcedimentosRegisterDTO> procedimentosDTO = procedimentos.OrderBy(x => x.NomeProcedimento).Select(p => new AgendamentoFuncionProcedimentosRegisterDTO
+            {
+                NomeProcedimento = p.NomeProcedimento,
+                ProcedimentoId = p.ProcedimentoId
+            }).ToList();
+
+            return procedimentosDTO;
+        }
+
     }
 }

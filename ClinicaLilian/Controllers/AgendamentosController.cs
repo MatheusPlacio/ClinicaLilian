@@ -4,6 +4,7 @@ using Domain.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using OpenQA.Selenium;
+using Service.Services;
 using System.ComponentModel.DataAnnotations;
 
 namespace ClinicaLilian.Controllers
@@ -11,9 +12,15 @@ namespace ClinicaLilian.Controllers
     public class AgendamentosController : Controller
     {
         private readonly IAgendamentoService _agendamentoService;
-        public AgendamentosController(IAgendamentoService agendamentoService )
+        private readonly IFuncionarioService _funcionarioService;
+        private readonly IProcedimentoService _procedimetoService;
+        public AgendamentosController(IAgendamentoService agendamentoService,
+                                      IFuncionarioService funcionarioService,
+                                      IProcedimentoService procedimetoService)
         {
             _agendamentoService = agendamentoService;
+            _funcionarioService = funcionarioService;
+            _procedimetoService = procedimetoService;
         }
 
         public IActionResult Index()
@@ -40,7 +47,9 @@ namespace ClinicaLilian.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            ViewBag.Funcionarios = _funcionarioService.BuscarFuncionariosAgendamentos();
+            ViewBag.Procedimentos = _procedimetoService.BuscarProcedimentosAgendamentos();
+            return View(new AgendamentoFuncionProcedimentosRegisterDTO()); // Aqui, inicialize um novo modelo
         }
 
         [HttpPost]

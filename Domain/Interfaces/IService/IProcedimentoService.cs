@@ -1,4 +1,5 @@
-﻿using Domain.DTOs.ProcedimentosDTO;
+﻿using Domain.DTOs.AgendamentosDTO;
+using Domain.DTOs.ProcedimentosDTO;
 using Domain.Models;
 
 namespace Domain.Interfaces.IService
@@ -7,5 +8,6 @@ namespace Domain.Interfaces.IService
     {
         IList<ProcedimentoDTO> ObterTodosProcedimentos();
         ProcedimentoDTO ObterProcedimentosPorId(int id);
+        IList<AgendamentoFuncionProcedimentosRegisterDTO> BuscarProcedimentosAgendamentos();
     }
 }

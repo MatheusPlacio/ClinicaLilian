@@ -1,1 +1,62 @@
-﻿
+﻿@model Domain.DTOs.AgendamentosDTO.AgendamentoFuncionProcedimentosRegisterDTO
+
+<h2>Criar Agendamento</h2>
+
+<form asp-action="CriarAgendamento" method="post">
+    <!-- Seleção de Paciente -->
+    <div class="form-group">
+        <label for="PacienteId">Paciente</label>
+        <select class="form-control" id="PacienteId" name="PacienteId">
+            <option value="" disabled selected>Selecione um paciente</option>
+            <!-- Adicione opções de pacientes aqui (se houver muitos, você pode carregar dinamicamente) -->
+        </select>
+    </div>
+
+    <!-- Seleção de Funcionário -->
+    <div class="form-group">
+        <label for="FuncionarioId">Funcionário</label>
+        <select class="form-control" id="FuncionarioId" name="FuncionarioId">
+            <option value="" disabled selected>Selecione um funcionário</option>
+            @foreach (var funcionario in ViewBag.Funcionarios)
+            {
+                <option value="@funcionario.FuncionarioId">@funcionario.NomeFuncionario</option>
+            }
+        </select>
+    </div>
+
+
+    <!-- Seleção de Procedimento -->
+    <div class="form-group">
+        <label for="ProcedimentoId">Procedimento</label>
+        <select class="form-control" id="ProcedimentoId" name="ProcedimentoId">
+            <option value="" disabled selected>Selecione um procedimento</option>
+            @foreach (var procedimento in ViewBag.Procedimentos)
+            {
+                <option value="@procedimento.ProcedimentoId">@procedimento.NomeProcedimento</option>
+            }
+        </select>
+    </div>
+
+    <!-- Outros campos do agendamento -->
+    <div class="form-group">
+        <!-- Adicione outros campos conforme necessário -->
+        <label for="AgendamentoProcedimentoRegisterDTO.DataHoraMarcada">Data e Hora</label>
+        <input type="datetime-local" class="form-control" id="DataHoraMarcada" name="AgendamentoProcedimentoRegisterDTO.DataHoraMarcada" required>
+    </div>
+
+    <div class="form-group">
+        <label for="AgendamentoProcedimentoRegisterDTO.Sessoes">Sessões</label>
+        <input type="number" class="form-control" id="Sessoes" name="AgendamentoProcedimentoRegisterDTO.Sessoes" required>
+    </div>
+
+    <div class="form-group">
+        <label for="AgendamentoProcedimentoRegisterDTO.Observacao">Observação</label>
+        <textarea class="form-control" id="Observacao" name="AgendamentoProcedimentoRegisterDTO.Observacao"></textarea>
+    </div>
+
+    <!-- Botão de Submissão -->
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Criar Agendamento</button>
+    </div>
+</form>
+

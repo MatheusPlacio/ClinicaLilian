@@ -1,5 +1,6 @@
 ﻿using Amazon.Lambda.Model;
 using AutoMapper;
+using Domain.DTOs.AgendamentosDTO;
 using Domain.DTOs.FuncionariosDTO;
 using Domain.DTOs.PacientesDTO;
 using Domain.Interfaces.IRepository;
@@ -39,6 +40,19 @@ namespace Service.Services
                Celular = p.Celular,
                Email = p.Email,
                Especialidade = p.Especialidade 
+            }).ToList();
+
+            return funcionariosDTO;
+        }
+
+        public IList<AgendamentoFuncionProcedimentosRegisterDTO> BuscarFuncionariosAgendamentos()
+        {
+            IList<Funcionario> funcionarios = _funcionarioRepository.Get();
+
+            IList<AgendamentoFuncionProcedimentosRegisterDTO> funcionariosDTO = funcionarios.OrderBy(x => x.Nome).Select(p => new AgendamentoFuncionProcedimentosRegisterDTO
+            {
+                NomeFuncionario = p.Nome,
+                FuncionarioId = p.FuncionarioId
             }).ToList();
 
             return funcionariosDTO;

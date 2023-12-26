@@ -13,7 +13,10 @@
 @model IEnumerable<Domain.DTOs.AgendamentosDTO.AgendamentoFuncionProcedimentosDTO>
 
 @{
-    ViewData["Title"] = "Lista de Agendamentos";
+    var pageSize = 4; // Número de itens por página
+    int pageNumber;
+    int.TryParse(Context.Request.Query["page"], out pageNumber);
+    pageNumber = pageNumber <= 0 ? 1 : pageNumber;
 }
 
 <div class="container">
@@ -33,6 +36,7 @@
         </small>
     </h2>
 
+    <a href="@Url.Action("Create", "Agendamentos")" class="btn btn-success mb-2">Novo Agendamento</a>
 
     <div class="table-responsive">
         <table class="table table-bordered table-hover">
@@ -44,7 +48,9 @@
                     <th>Observação</th>
                     <th>Paciente</th>
                     <th>Colaborador</th>
-                    <th>Realizado</th>
+                    <th>Realizar</th>
+                    <th>Reagendar</th>
+                    <th>Cancelar</th>
                     <th>Ações</th> 
                 </tr>
             </thead>
@@ -65,13 +71,33 @@
                             }
                             else if (!agendamento.ProcedimentoAgendamento.Realizado && !agendamento.ProcedimentoAgendamento.Cancelado)
                             {
-                                <span class="badge bg-warning text-dark" style="background-color: #FF8C00;">PENDENTE</span>
+                                <button class="btn btn-warning btn-sm reagendar-btn"
+                                        style="background-color: #FF8C00; font-size: 12px; font-weight: bold; color: black;"
+                                        data-id="@agendamento.ProcedimentoAgendamento.AgendamentoId"
+                                        onclick="reagendarClick(@agendamento.ProcedimentoAgendamento.AgendamentoId)">
+                                    Pendente
+                                </button>
                             }
                             else if (agendamento.ProcedimentoAgendamento.Cancelado)
                             {
                                 <span class="badge bg-danger">CANCELADO <i class="fa fa-times"></i></span>
                             }
                         </td>
+
+                        <td>
+                            <!-- Botão Reagendar -->
+                            <button class="btn btn-warning btn-sm reagendar-btn" style="background-color: #FF8C00; font-size: 12px; font-weight: bold; color: black;" data-id="@agendamento.ProcedimentoAgendamento.AgendamentoId">Reagendar</button>
+                        </td>
+
+                        <td>
+                            <!-- Botão Cancelar com alerta de confirmação -->
+                            <button class="btn btn-danger btn-sm cancelar-btn"
+                                    data-id="@agendamento.ProcedimentoAgendamento.AgendamentoId"
+                                    onclick="return confirm('Tem certeza que deseja cancelar esse agendamento?')">
+                                Cancelar
+                            </button>
+                        </td>
+
                         <td>
                             <button type="button" class="btn btn-info expand-button" data-toggle="collapse" data-target="#details@(agendamento.ProcedimentoAgendamento.ProcedimentoAgendamentoId)">
                                 <span class="icon-expand">
@@ -81,7 +107,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="8" class="hiddenRow">
+                        <td colspan="10" class="hiddenRow">
                             <div class="accordian-body collapse" id="details@(agendamento.ProcedimentoAgendamento.ProcedimentoAgendamentoId)">
                                 <p><strong style="font-size: 18px;">Detalhes do Colaborador:</strong></p>
                                 <p>Nome: @agendamento.Funcionario.Nome</p>
@@ -103,6 +129,19 @@
                 }
             </tbody>
         </table>
+    </div>
+    <div class="card-footer clearfix">
+        <div class="d-flex justify-content-center mt-3">
+            <!-- Paginação simples com links para páginas anteriores e próximas -->
+            @if (pageNumber > 1)
+            {
+                <a href="@Url.Action("Index", new { page = pageNumber - 1 })" class="btn btn-primary">Página Anterior</a>
+            }
+            @if (Model.Count() > pageNumber * pageSize)
+            {
+                <a href="@Url.Action("Index", new { page = pageNumber + 1 })" class="btn btn-primary ml-2">Próxima Página</a>
+            }
+        </div>
     </div>
 
     <div class="row">
@@ -149,6 +188,40 @@
                 $(targetId).collapse('toggle');
             });
         });
+
+        function filtrarPorData() {
+            // Obtemos as datas selecionadas
+            var dataInicioStr = $('#filtroDataInicio').val();
+            var dataFimStr = $('#filtroDataFim').val();
+
+            // Verifica se as datas estão no formato esperado
+            if (!isValidDate(dataInicioStr) || !isValidDate(dataFimStr)) {
+                alert('Por favor, insira datas válidas no formato DD/MM/YYYY.');
+                return;
+            }
+
+            // Converte as datas para o formato ISO (YYYY-MM-DD) antes de comparar
+            var dataInicio = moment(dataInicioStr, 'DD/MM/YYYY').startOf('day').format('YYYY-MM-DD');
+            var dataFim = moment(dataFimStr, 'DD/MM/YYYY').endOf('day').format('YYYY-MM-DD');
+
+            // Exibe ou oculta as linhas da tabela com base no intervalo de datas selecionado
+            $('.data-row').each(function () {
+                var rowData = moment($(this).find('td:eq(1)').text(), 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD');
+
+                if (moment(rowData).isBetween(dataInicio, dataFim, null, '[]')) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+
+        // Função auxiliar para verificar se uma data é válida
+        function isValidDate(dateString) {
+            var regex = /^\d{2}\/\d{2}\/\d{4}$/;
+            return dateString.match(regex) !== null;
+        }
+
     </script>
 
 </div>

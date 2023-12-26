@@ -145,9 +145,28 @@ namespace Service.Services
             var pacienteExistente = _pacienteRepository.GetById(agendamentoDTO.PacienteId);
             var funcionarioExistente = _funcionarioRepository.GetById(agendamentoDTO.FuncionarioId);
 
-            // Verifique se o procedimento, paciente e funcionário existem no banco
-            if (procedimentoExistente == null || pacienteExistente == null || funcionarioExistente == null)
+            // Verifique se o procedimento, funcionário existem no banco
+            if (procedimentoExistente == null || funcionarioExistente == null)
                 return null;
+
+            Paciente newPaciente = null;
+
+            if (pacienteExistente == null)
+            {
+                newPaciente = new Paciente
+                {
+                    Nome = agendamentoDTO.Nome,
+                    SobreNome = agendamentoDTO.SobreNome,
+                    DataDeNascimento = agendamentoDTO.DataDeNascimento,
+                    Genero = agendamentoDTO.Genero,
+                    CPF = agendamentoDTO.CPF,
+                    Celular = agendamentoDTO.Celular,
+                    Email = agendamentoDTO.Email,
+                    Profissao = agendamentoDTO.Profissao
+                };
+
+                _pacienteRepository.Add(newPaciente);
+            }
 
             var dataHoraMarcada = agendamentoDTO.AgendamentoProcedimentoRegisterDTO.DataHoraMarcada;
 
@@ -173,7 +192,7 @@ namespace Service.Services
 
             var novoAgendamentosPacientes = new AgendamentosPacientes
             {
-                Paciente = pacienteExistente,
+                Paciente = pacienteExistente != null ? pacienteExistente : newPaciente,
                 Agendamento = novoAgendamento,
                 DataHoraMarcada = dataHoraMarcada,
             };

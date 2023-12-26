@@ -38,7 +38,13 @@ namespace ClinicaLilian.Controllers
             return Ok(agendamentos);
         }
 
-        public IActionResult CriarAgendamento([FromBody] AgendamentoFuncionProcedimentosRegisterDTO agendamentoDTO)
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult CriarAgendamento(AgendamentoFuncionProcedimentosRegisterDTO agendamentoDTO)
         {
             try
             {

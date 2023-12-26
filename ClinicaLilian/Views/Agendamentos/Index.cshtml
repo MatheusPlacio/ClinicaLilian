@@ -21,11 +21,11 @@
         Lista de Agendamentos
         <small class="text-muted float-right filter-icon">
             <i class="nav-icon fas fa-calendar-alt"></i> Filtrar por Data
-            <div class="input-group">
+            <div class="input-group" style="margin-left: -1px; width: 100%;">
                 <input type="text" class="form-control datepicker" id="filtroDataInicio" placeholder="Data Inicial">
                 <input type="text" class="form-control datepicker" id="filtroDataFim" placeholder="Data Final">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="filtrarBtn">
+                <div class="input-group-append" style="width: auto;">
+                    <button class="btn btn-outline-secondary align-middle" type="button" id="filtrarBtn" style="min-width: 80px;">
                         Filtrar
                     </button>
                 </div>
@@ -81,11 +81,11 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="7" class="hiddenRow">
+                        <td colspan="8" class="hiddenRow">
                             <div class="accordian-body collapse" id="details@(agendamento.ProcedimentoAgendamento.ProcedimentoAgendamentoId)">
                                 <p><strong style="font-size: 18px;">Detalhes do Colaborador:</strong></p>
                                 <p>Nome: @agendamento.Funcionario.Nome</p>
-                                <p>Sobrenome: @agendamento.Funcionario.SobreNome</p>
+                              @*   <p>Sobrenome: @agendamento.Funcionario.SobreNome</p> *@
                                 <p>Especialidade: @agendamento.Funcionario.Especialidade</p>
                                 <hr style="border-top: 2px solid black; margin: 10px 0;">
                                 <p><strong style="font-size: 18px;">Detalhes do Paciente:</strong></p>

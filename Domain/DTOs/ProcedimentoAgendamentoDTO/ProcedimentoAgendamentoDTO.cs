@@ -21,6 +21,10 @@ namespace Domain.DTOs.NewFolder
         public DateTime DataHoraMarcada { get; set; }
 
         //===========================================================================================================================//
+        public bool Realizado { get; set; }
+        public bool Reagendado { get; set; }
+        public bool Cancelado { get; set; }
+        //===========================================================================================================================//
 
         [StringLength(10, ErrorMessage = "O campo {0} deve ter no máximo {1} caracteres")]
         public int Sessoes { get; set; }

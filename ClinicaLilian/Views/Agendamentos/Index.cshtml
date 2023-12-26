@@ -1,11 +1,38 @@
-﻿@model IEnumerable<Domain.DTOs.AgendamentosDTO.AgendamentoFuncionProcedimentosDTO>
+﻿<!-- Adicione a biblioteca Bootstrap-datepicker CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+<!-- Adicione o jQuery (use a versão mais recente) -->
+<script src="https://code.jquery.com/jquery-3.x.min.js"></script>
+
+<!-- Adicione a biblioteca Bootstrap-datepicker JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+<!-- Adicione a localização pt-BR para o datepicker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+
+@model IEnumerable<Domain.DTOs.AgendamentosDTO.AgendamentoFuncionProcedimentosDTO>
 
 @{
     ViewData["Title"] = "Lista de Agendamentos";
 }
 
 <div class="container">
-    <h2 class="mt-4 mb-4">Lista de Agendamentos</h2>
+    <h2 class="mt-4 mb-4">
+        Lista de Agendamentos
+        <small class="text-muted float-right filter-icon">
+            <i class="nav-icon fas fa-calendar-alt"></i> Filtrar por Data
+            <div class="input-group">
+                <input type="text" class="form-control datepicker" id="filtroDataInicio" placeholder="Data Inicial">
+                <input type="text" class="form-control datepicker" id="filtroDataFim" placeholder="Data Final">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="filtrarBtn">
+                        Filtrar
+                    </button>
+                </div>
+            </div>
+        </small>
+    </h2>
+
 
     <div class="table-responsive">
         <table class="table table-bordered table-hover">
@@ -17,13 +44,14 @@
                     <th>Observação</th>
                     <th>Paciente</th>
                     <th>Colaborador</th>
-                    <th>Ações</th> <!-- Nova coluna para botões de ação -->
+                    <th>Realizado</th>
+                    <th>Ações</th> 
                 </tr>
             </thead>
             <tbody>
                 @foreach (var agendamento in Model)
                 {
-                    <tr>
+                    <tr class="data-row">
                         <td>@agendamento.ProcedimentoAgendamento.NomeProcedimento</td>
                         <td>@agendamento.ProcedimentoAgendamento.DataHoraMarcada.ToString("dd/MM/yyyy HH:mm")</td>
                         <td>@agendamento.ProcedimentoAgendamento.Sessoes</td>
@@ -31,7 +59,21 @@
                         <td>@($"{agendamento.Paciente.Nome} {agendamento.Paciente.SobreNome}")</td>
                         <td>@($"{agendamento.Funcionario.Nome} {agendamento.Funcionario.SobreNome}")</td>
                         <td>
-                            <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#details@(agendamento.ProcedimentoAgendamento.ProcedimentoAgendamentoId)">
+                            @if (agendamento.ProcedimentoAgendamento.Realizado)
+                            {
+                                <span class="badge bg-success text-center" style="font-size: 90%;">OK</span>
+                            }
+                            else if (!agendamento.ProcedimentoAgendamento.Realizado && !agendamento.ProcedimentoAgendamento.Cancelado)
+                            {
+                                <span class="badge bg-warning text-dark" style="background-color: #FF8C00;">PENDENTE</span>
+                            }
+                            else if (agendamento.ProcedimentoAgendamento.Cancelado)
+                            {
+                                <span class="badge bg-danger">CANCELADO <i class="fa fa-times"></i></span>
+                            }
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-info expand-button" data-toggle="collapse" data-target="#details@(agendamento.ProcedimentoAgendamento.ProcedimentoAgendamentoId)">
                                 <span class="icon-expand">
                                     <i class="fa fa-caret-down"></i> <!-- Ícone para expandir -->
                                 </span>
@@ -46,7 +88,7 @@
                                 <p>Sobrenome: @agendamento.Funcionario.SobreNome</p>
                                 <p>Especialidade: @agendamento.Funcionario.Especialidade</p>
                                 <hr style="border-top: 2px solid black; margin: 10px 0;">
-                                <p><strong style ="font-size: 18px;">Detalhes do Paciente:</strong></p>
+                                <p><strong style="font-size: 18px;">Detalhes do Paciente:</strong></p>
                                 <p>Nome: @agendamento.Paciente.Nome</p>
                                 <p>Sobrenome: @agendamento.Paciente.SobreNome</p>
                                 <p>Data de Nascimento: @agendamento.Paciente.DataDeNascimento</p>
@@ -68,5 +110,45 @@
             <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Voltar</a>
         </div>
     </div>
-</div>
+    <script>
+        $(document).ready(function () {
+            // Inicializa o plugin de data com localização pt-BR
+            $('.datepicker').datepicker({
+                language: 'pt-BR',
+                format: 'dd/mm/yyyy',
+                todayBtn: 'linked',
+                clearBtn: true,
+                autoclose: true,
+                orientation: 'bottom'
+            });
 
+            $('#filtrarBtn').on('click', function () {
+                filtrarPorData();
+            });
+
+            function filtrarPorData() {
+                // Obtemos as datas selecionadas
+                var dataInicio = moment($('#filtroDataInicio').val(), 'DD/MM/YYYY').startOf('day');
+                var dataFim = moment($('#filtroDataFim').val(), 'DD/MM/YYYY').endOf('day');
+
+                // Exibe ou oculta as linhas da tabela com base no intervalo de datas selecionado
+                $('.data-row').each(function () {
+                    var rowData = moment($(this).find('td:eq(1)').text(), 'DD/MM/YYYY HH:mm');
+
+                    if (rowData.isBetween(dataInicio, dataFim, null, '[]')) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+
+            // Adiciona o manipulador de evento de expansão/recuo inicial
+            $('.expand-button').click(function () {
+                var targetId = $(this).data('target');
+                $(targetId).collapse('toggle');
+            });
+        });
+    </script>
+
+</div>

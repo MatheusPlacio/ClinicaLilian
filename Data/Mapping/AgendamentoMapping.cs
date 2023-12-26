@@ -13,7 +13,10 @@ namespace ApiLF.Mapping
 
             builder.Property(x => x.Sessoes).IsRequired();
 
-            builder.Property(x => x.Observacao).IsRequired().HasMaxLength(150); ;
+            builder.Property(x => x.Realizado).IsRequired();
+            builder.Property(x => x.Cancelado).IsRequired();
+
+            builder.Property(x => x.Observacao).IsRequired().HasMaxLength(150);
 
             builder.Property(x => x.DataHoraMarcada).IsRequired();
         }

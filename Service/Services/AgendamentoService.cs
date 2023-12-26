@@ -57,6 +57,8 @@ namespace Service.Services
                     DataHoraMarcada = p.DataHoraMarcada,
                     Sessoes = p.Sessoes,
                     Observacao = p.Observacao,
+                    Realizado = p.Realizado,
+                    Cancelado = p.Cancelado
                 },
                 Paciente = new PacienteDTO
                 {

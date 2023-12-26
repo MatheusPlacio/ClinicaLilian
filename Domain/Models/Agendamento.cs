@@ -15,6 +15,9 @@ namespace Domain.Models
         public int Sessoes { get; set; }
         //===========================================================================================================================//
 
+        public bool Realizado { get; set; }
+        public bool Cancelado { get; set; }
+        //===========================================================================================================================//
 
         [StringLength(150, ErrorMessage = "O campo {0} deve ter no máximo {1} caracteres")]
         public string Observacao { get; set; }

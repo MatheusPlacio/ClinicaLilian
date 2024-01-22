@@ -6,6 +6,7 @@ using Domain.DTOs.PacientesDTO;
 using Domain.Interfaces.IRepository;
 using Domain.Interfaces.IService;
 using Domain.Models;
+using Domain.Settings;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -85,7 +86,7 @@ namespace Service.Services
                     DataNascimento = p.Funcionario.DataNascimento.ToString("dd/MM/yyyy"),
                     Especialidade = p.Funcionario.Especialidade
                 },
-            }).ToList();
+            }).OrderBy(x => x.ProcedimentoAgendamento.DataHoraMarcada).ToList();
 
             _logger.LogInformation($"Informações do agendamentoFuncionProcedimentosDTO: {JsonConvert.SerializeObject(agendamentoFuncionProcedimentosDTO)}");
 
@@ -223,29 +224,104 @@ namespace Service.Services
 
         }
 
-        public bool AtualizarAgendamento(int id, JsonPatchDocument<Agendamento> patchDocument)
+        public ServiceResult AtualizarAgendamento(int id, DateTime dataHoraMarca)
         {
-            Agendamento? agendamento = _agendamentoRepository.GetTodosAgendamentosById(id);
-
-            try
+            // Verifique se dataHoraMarca é anterior ao momento atual
+            if (dataHoraMarca < DateTime.Now)
             {
-                if (agendamento == null)
-                    return false;
+                ServiceResult result = new ServiceResult
+                {
+                    Success = false,
+                    ErrorMessage = "A data e hora selecionadas estão no passado. Por favor, escolha um horário futuro."
+                };
 
-                // Aplica as modificações contidas no JsonPatchDocument
-                patchDocument.ApplyTo(agendamento);
-
-                _agendamentoRepository.Update(agendamento);
-
-                // Atualize a DataHoraMarcada nas tabelas AgendamentosPacientes e ProcedimentoAgendamentos
-                _agendamentosPacientesRepository.UpdateDataHoraMarcada(id, agendamento.DataHoraMarcada);
-                _procedimentoAgendamentosRepository.UpdateDataHoraMarcada(id, agendamento.DataHoraMarcada);
-
-                return true;
+                return result;
             }
-            catch (Exception ex)
+
+            var agendamentoById = _agendamentoRepository.GetById(id);
+
+            if (agendamentoById == null)
             {
-                throw new ServiceException("Falha ao atualizar o agendamento.", ex);
+                ServiceResult result = new ServiceResult
+                {
+                    Success = false,
+                    ErrorMessage = "Erro ao atualizar o agendamento"
+                };
+
+                return result;
+            }
+            else
+            {
+                // Arredonde os minutos para o próximo intervalo de meia hora
+                var minutos = dataHoraMarca.Minute;
+                var minutosArredondados = (minutos / 30) * 30;
+                dataHoraMarca = new DateTime(dataHoraMarca.Year, dataHoraMarca.Month, dataHoraMarca.Day, dataHoraMarca.Hour, minutosArredondados, 0);
+
+                while (_agendamentoRepository.Buscar(c => c.DataHoraMarcada == dataHoraMarca && c.FuncionarioId == agendamentoById.FuncionarioId).Any())
+                {
+                    // Se o horário estiver ocupado, ajuste para o próximo intervalo de meia hora
+                    dataHoraMarca = dataHoraMarca.AddMinutes(30);
+                }
+
+                agendamentoById.DataHoraMarcada = dataHoraMarca;
+                agendamentoById.Cancelado = false;
+                agendamentoById.Realizado = false;
+
+                _agendamentoRepository.Update(agendamentoById);
+                _agendamentosPacientesRepository.UpdateDataHoraMarcada(id, dataHoraMarca);
+                _procedimentoAgendamentosRepository.UpdateDataHoraMarcada(id, dataHoraMarca);
+
+                return new ServiceResult { Success = true, ErrorMessage = "" };
+            }
+
+        }
+
+        public ServiceResult AtualizarConfirmacao(int agendamentoId)
+        {
+            var agendamentoById = _agendamentoRepository.GetById(agendamentoId);
+
+            if (agendamentoById == null)
+            {
+                ServiceResult result = new ServiceResult
+                {
+                    Success = false,
+                    ErrorMessage = "Erro ao atualizar a confirmação"
+                };
+
+                return result;
+            }
+            else
+            {
+                agendamentoById.Realizado = true;
+
+                _agendamentoRepository.Update(agendamentoById);
+
+                return new ServiceResult { Success = true, ErrorMessage = "" };
+            }
+
+        }
+
+        public ServiceResult AtualizarCancelamento(int agendamentoId)
+        {
+            var agendamentoById = _agendamentoRepository.GetById(agendamentoId);
+
+            if (agendamentoById == null)
+            {
+                ServiceResult result = new ServiceResult
+                {
+                    Success = false,
+                    ErrorMessage = "Erro ao atualizar o cancelamento"
+                };
+
+                return result;
+            }
+            else
+            {
+                agendamentoById.Cancelado = true;
+
+                _agendamentoRepository.Update(agendamentoById);
+
+                return new ServiceResult { Success = true, ErrorMessage = "" };
             }
         }
 

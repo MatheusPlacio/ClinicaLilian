@@ -1,14 +1,19 @@
-﻿<!-- Adicione a biblioteca Bootstrap-datepicker CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+﻿<script src="https://code.jquery.com/jquery-3.x.min.js"></script>
 
-<!-- Adicione o jQuery (use a versão mais recente) -->
-<script src="https://code.jquery.com/jquery-3.x.min.js"></script>
+<!-- Adicione a biblioteca Moment.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
 <!-- Adicione a biblioteca Bootstrap-datepicker JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
+<!-- Adicione a biblioteca Eonasdan-bootstrap-datetimepicker JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
 <!-- Adicione a localização pt-BR para o datepicker -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+
+<!-- Adicione a localização pt-BR para o datetimepicker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/pt-br.js"></script>
 
 @model IEnumerable<Domain.DTOs.AgendamentosDTO.AgendamentoFuncionProcedimentosDTO>
 
@@ -19,14 +24,24 @@
     pageNumber = pageNumber <= 0 ? 1 : pageNumber;
 }
 
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @foreach (var modelError in ViewData.ModelState.SelectMany(kvp => kvp.Value.Errors))
+        {
+            <p>@modelError.ErrorMessage</p>
+        }
+    </div>
+}
+
 <div class="container">
     <h2 class="mt-4 mb-4">
         Lista de Agendamentos
         <small class="text-muted float-right filter-icon">
             <i class="nav-icon fas fa-calendar-alt"></i> Filtrar por Data
             <div class="input-group" style="margin-left: -1px; width: 100%;">
-                <input type="text" class="form-control datepicker" id="filtroDataInicio" placeholder="Data Inicial">
-                <input type="text" class="form-control datepicker" id="filtroDataFim" placeholder="Data Final">
+                <input type="text" class="form-control datetimepicker" id="filtroDataInicio" placeholder="Data Inicial">
+                <input type="text" class="form-control datetimepicker" id="filtroDataFim" placeholder="Data Final">
                 <div class="input-group-append" style="width: auto;">
                     <button class="btn btn-outline-secondary align-middle" type="button" id="filtrarBtn" style="min-width: 80px;">
                         Filtrar
@@ -74,7 +89,7 @@
                                 <button class="btn btn-warning btn-sm reagendar-btn"
                                         style="background-color: #FF8C00; font-size: 12px; font-weight: bold; color: black;"
                                         data-id="@agendamento.ProcedimentoAgendamento.AgendamentoId"
-                                        onclick="reagendarClick(@agendamento.ProcedimentoAgendamento.AgendamentoId)">
+                                        onclick="confirmarAgendamento('@Url.Action("AtualizarConfirmacao", "Agendamentos", new { id = agendamento.ProcedimentoAgendamento.AgendamentoId })')">
                                     Pendente
                                 </button>
                             }
@@ -86,17 +101,44 @@
 
                         <td>
                             <!-- Botão Reagendar -->
-                            <button class="btn btn-warning btn-sm reagendar-btn" style="background-color: #FF8C00; font-size: 12px; font-weight: bold; color: black;" data-id="@agendamento.ProcedimentoAgendamento.AgendamentoId">Reagendar</button>
+                            <button class="btn btn-warning btn-sm reagendar-btn" style="background-color: #FF8C00; font-size: 12px; font-weight: bold; color: black;" data-toggle="modal" data-target="#reagendarModal_@agendamento.ProcedimentoAgendamento.AgendamentoId">Reagendar</button>
                         </td>
 
                         <td>
                             <!-- Botão Cancelar com alerta de confirmação -->
-                            <button class="btn btn-danger btn-sm cancelar-btn"
-                                    data-id="@agendamento.ProcedimentoAgendamento.AgendamentoId"
-                                    onclick="return confirm('Tem certeza que deseja cancelar esse agendamento?')">
-                                Cancelar
-                            </button>
+                            @if (!agendamento.ProcedimentoAgendamento.Cancelado)
+                            {
+                                <button class="btn btn-danger btn-sm cancelar-btn"
+                                        data-id="@agendamento.ProcedimentoAgendamento.AgendamentoId"
+                                        onclick="confirmarCancelamento('@Url.Action("AtualizarCancelamento", "Agendamentos", new { id = agendamento.ProcedimentoAgendamento.AgendamentoId })')">
+                                    Cancelar
+                                </button>
+                            }
                         </td>
+
+                        <!-- Modal Reagendar -->
+                        <div class="modal fade" id="reagendarModal_@agendamento.ProcedimentoAgendamento.AgendamentoId" tabindex="-1" role="dialog" aria-labelledby="reagendarModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="reagendarModalLabel">Reagendar</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="novaDataHora">Nova Data e Hora:</label>
+                                            <input type="text" class="form-control datetimepicker" id="novaDataHora_@agendamento.ProcedimentoAgendamento.AgendamentoId" placeholder="Selecione uma nova data e hora">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                        <button type="button" class="btn btn-primary" data-id="@agendamento.ProcedimentoAgendamento.AgendamentoId"onclick="reagendarAgendamento('@Url.Action("AtualizarAgendamento", "Agendamentos")', @agendamento.ProcedimentoAgendamento.AgendamentoId)">Reagendar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <td>
                             <button type="button" class="btn btn-info expand-button" data-toggle="collapse" data-target="#details@(agendamento.ProcedimentoAgendamento.ProcedimentoAgendamentoId)">
@@ -151,15 +193,24 @@
     </div>
     <script>
         $(document).ready(function () {
-            // Inicializa o plugin de data com localização pt-BR
-            $('.datepicker').datepicker({
-                language: 'pt-BR',
-                format: 'dd/mm/yyyy',
-                todayBtn: 'linked',
-                clearBtn: true,
-                autoclose: true,
-                orientation: 'bottom'
+            // Inicializa o plugin Eonasdan-bootstrap-datetimepicker com localização pt-BR
+            $('.datetimepicker').datetimepicker({
+                format: 'DD/MM/YYYY HH:mm', // Formato para data e hora
+                locale: 'pt-br', // Define a localização para português
+                icons: {
+                    time: 'far fa-clock',
+                    date: 'far fa-calendar-alt',
+                    up: 'fas fa-chevron-up',
+                    down: 'fas fa-chevron-down',
+                    previous: 'fas fa-chevron-left',
+                    next: 'fas fa-chevron-right',
+                    today: 'fas fa-calendar-check',
+                    clear: 'fas fa-trash-alt',
+                    close: 'fas fa-times'
+                },
+                sideBySide: true // Exibe o seletor de data e hora lado a lado
             });
+
 
             $('#filtrarBtn').on('click', function () {
                 filtrarPorData();
@@ -221,6 +272,40 @@
             var regex = /^\d{2}\/\d{2}\/\d{4}$/;
             return dateString.match(regex) !== null;
         }
+
+        function confirmarAgendamento(redirectUrl) {
+            if (confirm('Tem certeza que deseja confirmar esse agendamento?')) {
+                // Redirecione para a URL especificada
+                window.location.href = redirectUrl;
+            }
+        }
+
+        function confirmarCancelamento(redirectUrl) {
+            if (confirm('Tem certeza que deseja cancelar esse agendamento?')) {
+                // Redirecione para a URL especificada
+                window.location.href = redirectUrl;
+            }
+        }
+
+        function reagendarAgendamento(redirectUrl, agendamentoId) {
+        // Obtenha a nova data e hora da modal
+            var novaDataHora = $('#novaDataHora_' + agendamentoId).val();
+
+        // Faça uma chamada AJAX para o endpoint AtualizarAgendamento
+        $.ajax({
+                url: redirectUrl + '/' + agendamentoId,
+            type: 'POST',
+            data: { dataHoraMarca: novaDataHora },
+            success: function (result) {
+                // Redirecione ou atualize a página conforme necessário
+                    window.location.href = redirectUrl;
+            },
+            error: function (error) {
+                // Lide com erros, se necessário
+                console.error('Erro ao reagendar:', error);
+            }
+        });
+    }
 
     </script>
 

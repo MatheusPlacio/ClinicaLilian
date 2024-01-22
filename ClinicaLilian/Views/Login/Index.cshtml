@@ -1,0 +1,157 @@
+﻿@model Domain.DTOs.LoginDTO.LoginDTO
+@{
+    Layout = null;
+}
+<!-- BS Stepper -->
+<link rel="stylesheet" href="~/lib/bs-stepper/css/bs-stepper.min.css">
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css">
+<!-- Ionicons -->
+<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/lib/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+<!-- iCheck -->
+<link rel="stylesheet" href="~/lib/icheck-bootstrap/icheck-bootstrap.min.css">
+<!-- JQVMap -->
+<link rel="stylesheet" href="~/lib/jqvmap/jqvmap.min.css">
+<!-- Theme style -->
+<link rel="stylesheet" href="~/css/adminlte.min.css">
+<!-- overlayScrollbars -->
+<link rel="stylesheet" href="~/lib/overlayScrollbars/css/OverlayScrollbars.min.css">
+<!-- Daterange picker -->
+<link rel="stylesheet" href="~/lib/daterangepicker/daterangepicker.css">
+<!-- summernote -->
+<link rel="stylesheet" href="~/lib/summernote/summernote-bs4.min.css">
+<div class="content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 col-sm-8">
+                <div class="card">
+                    <div class="card-body login-card-body">
+                        <p class="login-box-msg"></p>
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                                <div class="alert alert-danger">
+                                    Tentativa de login inválida.
+                                </div>
+                        }
+
+                        <form asp-action="Index" asp-controller="Login" method="post">
+                            <div class="input-group mb-3">
+                                <input asp-for="Email" class="form-control" placeholder="Email">
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-envelope"></span>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="input-group mb-3">
+                                <input asp-for="Password" class="form-control" placeholder="Password">
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-lock"></span>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="icheck-primary">
+                                        <input type="checkbox" id="remember">
+                                        <label for="remember">
+                                            Lembrar me
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- /.col -->
+                                <div class="col-4">
+                                    <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script src="~/lib/jquery/jquery.min.js"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+    $.widget.bridge('uibutton', $.ui.button)
+</script>
+<!-- Bootstrap 4 -->
+<script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- ChartJS -->
+<script src="~/lib/chart.js/Chart.min.js"></script>
+<!-- Sparkline -->
+<script src="~/lib/sparklines/sparkline.js"></script>
+<!-- JQVMap -->
+<script src="~/lib/jqvmap/jquery.vmap.min.js"></script>
+<script src="~/lib/jqvmap/maps/jquery.vmap.usa.js"></script>
+<!-- jQuery Knob Chart -->
+<script src="~/lib/jquery-knob/jquery.knob.min.js"></script>
+<!-- daterangepicker -->
+<script src="~/lib/moment/moment.min.js"></script>
+<script src="~/lib/daterangepicker/daterangepicker.js"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- Summernote -->
+<script src="~/lib/summernote/summernote-bs4.min.js"></script>
+<!-- overlayScrollbars -->
+<script src="~/lib/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<!-- AdminLTE App -->
+<script src="~/js/adminlte.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="~/js/demo.js"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="~/js/pages/dashboard.js"></script>
+<!-- BS-Stepper -->
+<script src="~/lib/bs-stepper/js/bs-stepper.min.js"></script>
+<!-- DataTables  & Plugins -->
+<script src="~/lib/datatables/jquery.dataTables.min.js"></script>
+<script src="~/lib/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/lib/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/lib/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/lib/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/lib/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/jszip/jszip.min.js"></script>
+<script src="~/lib/pdfmake/pdfmake.min.js"></script>
+<script src="~/lib/pdfmake/vfs_fonts.js"></script>
+<script src="~/lib/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/lib/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/lib/chart.js/Chart.min.js"></script>
+
+
+<style>
+    .content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-image: url('~/img/loginFundo.png'); /* Caminho para a sua imagem */
+        background-size: cover; /* Faz com que a imagem cubra todo o espaço disponível */
+        background-position: center; /* Centraliza a imagem */
+    }
+
+
+    .login-card-body {
+        padding: 25px;
+    }
+</style>

@@ -3,6 +3,7 @@ using Domain.Interfaces.IService;
 using Domain.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OpenQA.Selenium;
 using Service.Services;
 using System.ComponentModel.DataAnnotations;
@@ -70,18 +71,62 @@ namespace ClinicaLilian.Controllers
             }
         }
 
-        public IActionResult AtualizarAgendamento(int id, [FromBody] JsonPatchDocument<Agendamento> patchDocument)
+        public IActionResult AtualizarAgendamento(int id, DateTime dataHoraMarca)
         {
             try
             {
-                bool sucesso = _agendamentoService.AtualizarAgendamento(id, patchDocument);
+                var sucesso = _agendamentoService.AtualizarAgendamento(id, dataHoraMarca);
 
-                if (!sucesso)
+                if (!sucesso.Success)
                 {
-                    return NotFound("Agendamento não encontrado.");
+                    ModelState.AddModelError(string.Empty, sucesso.ErrorMessage);
+
+                    return View("Index", _agendamentoService.ObterTodosAgendamentosFuncionariosProcedimentos());
                 }
 
-                return Ok("Agendamento atualizado com sucesso.");
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        public IActionResult AtualizarConfirmacao(int id)
+        {
+            try
+            {
+                var sucesso = _agendamentoService.AtualizarConfirmacao(id);
+
+                if (!sucesso.Success)
+                {
+                     ModelState.AddModelError(string.Empty, sucesso.ErrorMessage); 
+
+                    return View("Index", _agendamentoService.ObterTodosAgendamentosFuncionariosProcedimentos());
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+        public IActionResult AtualizarCancelamento(int id)
+        {
+            try
+            {
+                var sucesso = _agendamentoService.AtualizarCancelamento(id);
+
+                if (!sucesso.Success)
+                {
+                    ModelState.AddModelError(string.Empty, sucesso.ErrorMessage);
+
+                    return View("Index", _agendamentoService.ObterTodosAgendamentosFuncionariosProcedimentos());
+                }
+
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {

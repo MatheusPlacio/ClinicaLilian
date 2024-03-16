@@ -1,11 +1,24 @@
 ﻿@model IEnumerable<Domain.DTOs.PacientesDTO.PacienteDTO>
 
-@{
-    var pageSize = 4; // Número de itens por página
-    int pageNumber;
-    int.TryParse(Context.Request.Query["page"], out pageNumber);
-    pageNumber = pageNumber <= 0 ? 1 : pageNumber;
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @foreach (var modelError in ViewData.ModelState.SelectMany(kvp => kvp.Value.Errors))
+        {
+            <p>@modelError.ErrorMessage</p>
+        }
+    </div>
 }
+
+<style>
+    /* Estilos para o campo de pesquisa */
+    .dataTables_wrapper .dataTables_filter {
+        float: none;
+        text-align: left;
+        margin: 10px;
+        position: relative; /* Para posicionar o ícone de lupa */
+    }
+</style>
 
 <section class="content-header">
     <div class="container-fluid">
@@ -24,138 +37,84 @@
 
 <section class="content">
     <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Listagem dos Pacientes</h3>
-            <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                    <i class="fas fa-minus"></i>
-                </button>
-            </div>
-        </div>
-
-        <div class="mb-4">
-            <form action="@Url.Action("PesquisarPorCpf", "Pacientes")" method="get" class="form-inline">
-                <div class="input-group input-group-sm">
-                    <input type="text" name="searchCpf" class="form-control mr-3 ml-3" placeholder="Pesquisar por CPF" pattern="\d+" style="color: black; background-color: #fff; margin-top: 10px;" title="Digite apenas números">
-                    <div class="input-group-append" style="margin-top: 10px;">
-                        <button type="submit" class="btn btn-primary ml-3">
-                            <i class="fas fa-search"></i> Pesquisar
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        @{
-            var searchCpf = Context.Request.Query["searchCpf"].ToString();
-        }
-
-        @if (!string.IsNullOrEmpty(searchCpf))
-        {
-            <!-- Mostra os resultados da pesquisa -->
-            <div class="mb-4">
-                <!-- Adicione o botão de retorno à lista anterior com estilos de posição -->
-                <a href="@Url.Action("Index", "Pacientes")" class="btn btn-secondary mt-2 mr-2" style="position: absolute; top: 5px; right: 15px;">
-                    <i class="fas fa-arrow-left"></i> Voltar à Lista Anterior
-                </a>
-            </div>
-
-
-            <!-- Aqui você mostra os resultados da pesquisa -->
-            <div class="table-responsive">
-                <!-- ... Seu código para exibir os detalhes do paciente ... -->
-            </div>
-        }
-
-            <div class="table-responsive">
-                <table class="table table-striped projects">
-                    <thead>
+        <div class="card-body p-0 table-responsive">
+            <table class="table table-striped projects" id="dataTable" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="width: 12%">Nome</th>
+                        <th style="width: 12%">Sobrenome</th>
+                        <th style="width: 12%">Data de Nascimento</th>
+                        <th style="width: 12%">Gênero</th>
+                        <th style="width: 12%">CPF</th>
+                        <th style="width: 12%">Celular</th>
+                        <th style="width: 12%">Email</th>
+                        <th style="width: 10%">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var paciente in Model)
+                    {
                         <tr>
-                            <th style="width: 15%">Nome</th>
-                            <th style="width: 15%">Sobrenome</th>
-                            <th style="width: 10%">Data de Nascimento</th>
-                            <th style="width: 10%">Gênero</th>
-                            <th style="width: 10%">CPF</th>
-                            <th style="width: 15%">Celular</th>
-                            <th style="width: 15%">Email</th>
-                            <th style="width: 10%">Profissão</th>
-                            <th style="width: 15%">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var paciente in Model.Skip((pageNumber - 1) * pageSize).Take(pageSize))
-                        {
-                            <tr>
-                                <td>
-                                    <input type="text" class="form-control" readonly value="@paciente.Nome">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" readonly value="@paciente.SobreNome">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" readonly value="@paciente.DataDeNascimento">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" readonly value="@paciente.Genero">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" readonly value="@paciente.CPF">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" readonly value="@paciente.Celular">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" readonly value="@paciente.Email">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" readonly value="@paciente.Profissao">
-                                </td>
-                                <td class="project-actions text-right">
-                                    <div class="btn-group-vertical">
-                                    <a class="btn btn-primary btn-sm mb-2" href="@Url.Action("ObterPacientePorId", "Pacientes", new { id = paciente.PacienteId })">
-                                            <i class="fas fa-eye"></i> Visualizar
-                                        </a>
-                                    <a class="btn btn-info btn-sm mb-2" href="@Url.Action("Edit", "Pacientes", new { id = paciente.PacienteId })">
+                            <td>@paciente.Nome</td>
+                            <td>@paciente.SobreNome</td>
+                            <td>@paciente.DataDeNascimento</td>
+                            <td>@paciente.Genero</td>
+                            <td>@paciente.CPF</td>
+                            <td>@paciente.Celular</td>
+                            <td>@paciente.Email</td>
+                            <td class="project-actions text-right">
+                                <div class="btn-group">
+                                    <a class="btn btn-primary btn-sm mb-1" href="@Url.Action("ObterPacientePorId", "Pacientes", new { id = paciente.PacienteId })">
+                                        <i class="fas fa-eye"></i> Visualizar
+                                    </a>
+                                </div>
+                                <div class="btn-group">
+                                    <a class="btn btn-info btn-sm mb-1" href="@Url.Action("edit", "pacientes", new { id = paciente.PacienteId })">
                                         <i class="fas fa-pencil-alt"></i> Editar
                                     </a>
-                                    <form action="@Url.Action("DeletarPaciente", "Pacientes")" method="post" style="display: inline-block;">
-                                            <input type="hidden" name="Id" value="@paciente.PacienteId" />
-                                            <button type="submit" class="btn btn-danger btn-sm mb-2" onclick="return confirm('Tem certeza que deseja excluir este paciente?');">
-                                                <i class="fas fa-trash"></i> Excluir
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        <div class="card-footer clearfix">
-            <div class="d-flex justify-content-center mt-3">
-                <!-- Paginação simples com links para páginas anteriores e próximas -->
-                @if (pageNumber > 1)
-                {
-                    <a href="@Url.Action("Index", new { page = pageNumber - 1 })" class="btn btn-primary">Página Anterior</a>
-                }
-                @if (Model.Count() > pageNumber * pageSize)
-                {
-                    <a href="@Url.Action("Index", new { page = pageNumber + 1 })" class="btn btn-primary ml-2">Próxima Página</a>
-                }
-            </div>
+                                </div>
+                                <div class="btn-group">
+                                    <form action="@Url.Action("deletarpaciente", "pacientes")" method="post" style="display: inline-block;">
+                                        <input type="hidden" name="id" value="@paciente.PacienteId" />
+                                        <button type="submit" class="btn btn-danger btn-sm mb-1" onclick="return confirm('Tem certeza que deseja excluir este paciente?');">
+                                            <i class="fas fa-trash"></i> Excluir
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
         <!-- /.card-body -->
     </div>
     <!-- /.card -->
 </section>
 
+
+<!-- /.content -->
+<!-- Control Sidebar -->
 <aside class="control-sidebar control-sidebar-dark">
     <!-- Control sidebar content goes here -->
 </aside>
+<!-- /.control-sidebar -->
+<!-- Inclusão de scripts jQuery e DataTables -->
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
 
-<!-- Bootstrap CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-<!-- Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+    new DataTable('#dataTable', {
+        "language": {
+            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Portuguese-Brasil.json"
+        },
+        "pagingType": "simple_numbers",
+        "paging": true,
+        "lengthChange": false,
+        "searching": true, // Habilita a funcionalidade de pesquisa
+        "info": false, // Desabilita a exibição do contador de registros
+        "autoWidth": false,
+        "ordering": false
+    });
+</script>
